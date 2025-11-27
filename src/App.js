@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import {
   ShieldCheck,
   ArrowRight,
@@ -11,7 +11,6 @@ import {
   ShoppingBag,
   CheckSquare,
   ClipboardList,
-  ChevronLeft, // Ajout d'une icône pour le retour
 } from "lucide-react";
 
 // --- 1. TES LIENS KOMIGO ---
@@ -48,19 +47,21 @@ const LINKS = {
 };
 
 // --- 2. CONFIGURATION AUTOMATISATION ---
+// C'est ici que tu colles l'adresse que Make va te donner
 const MAKE_WEBHOOK_URL =
   "https://hook.eu1.make.com/on3dp8ol1rk0pymb8fo67mpewz98yg86";
 
-const MESSENGER_LINK = "https://instagram.com/direct/t/sonia_bonnefoy";
+// Lien vers l'Instagram DM (Modifié selon la demande)
+const INSTAGRAM_DM_LINK = "https://ig.me/m/ton_identifiant_instagram_ici"; // REMPLACER PAR LE VRAI LIEN
 
-// --- 3. BASE DE DONNÉES PRODUITS ---
+// --- 3. BASE DE DONNÉES PRODUITS (Icônes supprimées) ---
 const PRODUCTS_DB = [
   {
     id: "fdt_mineral",
     name: "FDT Sérum TOUCH (Liquide)",
     category: "Teint",
     desc: "Couvrance modulable, fini poudré.",
-    img: "", // Icône retirée
+    img: "", // icône supprimée
     url: LINKS.FOUNDATION_LIQUID,
   },
   {
@@ -68,7 +69,7 @@ const PRODUCTS_DB = [
     name: "Crème Teintée BARE·YOU",
     category: "Teint",
     desc: 'Couvrance légère, fini "dewy".',
-    img: "", // Icône retirée
+    img: "", // icône supprimée
     url: LINKS.FOUNDATION_BB,
   },
   {
@@ -76,7 +77,7 @@ const PRODUCTS_DB = [
     name: "FDT Poudre Compacte TOUCH",
     category: "Teint",
     desc: "Sans talc. Fini velours.",
-    img: "", // Icône retirée
+    img: "", // icône supprimée
     url: LINKS.FOUNDATION_POWDER,
   },
   {
@@ -84,7 +85,7 @@ const PRODUCTS_DB = [
     name: "FDT Crème Compacte TOUCH",
     category: "Teint",
     desc: "Fini satiné, haute couvrance.",
-    img: "", // Icône retirée
+    img: "", // icône supprimée
     url: LINKS.FOUNDATION_CREME,
   },
   {
@@ -92,7 +93,7 @@ const PRODUCTS_DB = [
     name: "Base Illuminatrice",
     category: "Base",
     desc: "Lumière & Hydratation.",
-    img: "", // Icône retirée
+    img: "", // icône supprimée
     url: LINKS.BASE_ILLUMINATING,
   },
   {
@@ -100,7 +101,7 @@ const PRODUCTS_DB = [
     name: "Sérum YOUTHPLEXION",
     category: "Soin Profond",
     desc: "Booster collagène.",
-    img: "", // Icône retirée
+    img: "", // icône supprimée
     url: LINKS.SKINCARE_YOUTH,
   },
   {
@@ -108,7 +109,7 @@ const PRODUCTS_DB = [
     name: "Sérum UPLIFT Beauty",
     category: "Soin Tenseur",
     desc: "Lisse et raffermit.",
-    img: "", // Icône retirée
+    img: "", // icône supprimée
     url: LINKS.SKINCARE_UPLIFT,
   },
   {
@@ -116,7 +117,7 @@ const PRODUCTS_DB = [
     name: "Sérum GLOWPLEXION",
     category: "Soin Eclat",
     desc: "Cible les imperfections.",
-    img: "", // Icône retirée
+    img: "", // icône supprimée
     url: LINKS.SKINCARE_GLOW,
   },
   {
@@ -124,7 +125,7 @@ const PRODUCTS_DB = [
     name: "Gel Rafraîchissant",
     category: "Soin",
     desc: "Hydratation légère.",
-    img: "", // Icône retirée
+    img: "", // icône supprimée
     url: LINKS.SKINCARE_GEL,
   },
   {
@@ -132,7 +133,7 @@ const PRODUCTS_DB = [
     name: "Masque Détoxifiant",
     category: "Soin",
     desc: "Régule le sébum.",
-    img: "", // Icône retirée
+    img: "", // icône supprimée
     url: LINKS.SKINCARE_MASK,
   },
   {
@@ -140,7 +141,7 @@ const PRODUCTS_DB = [
     name: "Contour des Yeux Youniversal",
     category: "Soin Yeux",
     desc: "Hydrate et lisse les cernes.",
-    img: "", // Icône retirée
+    img: "", // icône supprimée
     url: LINKS.EYE_CREAM,
   },
   {
@@ -148,7 +149,7 @@ const PRODUCTS_DB = [
     name: "Patchs Contour des Yeux",
     category: "Soin Yeux",
     desc: "Hydrate & Décongestionne.",
-    img: "", // Icône retirée
+    img: "", // icône supprimée
     url: LINKS.EYE_MASK,
   },
   {
@@ -156,7 +157,7 @@ const PRODUCTS_DB = [
     name: "Correcteur Skin Perfecting",
     category: "Correction",
     desc: "Camouflage cernes.",
-    img: "", // Icône retirée
+    img: "", // icône supprimée
     url: LINKS.CONCEALER,
   },
   {
@@ -164,7 +165,7 @@ const PRODUCTS_DB = [
     name: "Poudre Prime & Set",
     category: "Finition",
     desc: "Eau encapsulée.",
-    img: "", // Icône retirée
+    img: "", // icône supprimée
     url: LINKS.POWDER_PRIME_SET,
   },
   {
@@ -172,7 +173,7 @@ const PRODUCTS_DB = [
     name: "Brume Prime & Set",
     category: "Finition",
     desc: "Fixation extrême.",
-    img: "", // Icône retirée
+    img: "", // icône supprimée
     url: LINKS.SPRAY,
   },
 ];
@@ -185,6 +186,7 @@ const GradientBackground = ({ children }) => (
   </div>
 );
 
+// Mise à jour de la Garantie Love It
 const GuaranteeBadge = () => (
   <div className="bg-green-50 border border-green-100 rounded-xl p-3 flex items-start gap-3 mb-4">
     <ShieldCheck className="text-green-600 flex-shrink-0" size={20} />
@@ -193,7 +195,7 @@ const GuaranteeBadge = () => (
         Garantie Love It Incluse
       </p>
       <p className="text-[11px] text-green-700 leading-tight">
-        Satisfaite ou échangée, même produit ouvert. Commandez sans risque.
+        Satisfaite ou échangée. <strong>Même si le produit est ouvert.</strong> Commandez sans risque.
       </p>
     </div>
   </div>
@@ -204,20 +206,20 @@ const QUESTIONS = [
     id: "tone",
     question: "Ton teint naturel ?",
     options: [
-      { label: "Très Clair", value: "VeryFair", color: "bg-[#fcece3]" },
-      { label: "Clair", value: "Fair", color: "bg-[#e8d2c2]" },
-      { label: "Moyen", value: "Medium", color: "bg-[#c19a79]" },
-      { label: "Mat / Foncé", value: "Dark", color: "bg-[#8b5e40]" },
-      { label: "Très Foncé", value: "Deep", color: "bg-[#54321f]" },
+      { label: "Très Clair", value: "VeryFair" },
+      { label: "Clair", value: "Fair" },
+      { label: "Moyen", value: "Medium" },
+      { label: "Mat / Foncé", value: "Dark" },
+      { label: "Très Foncé", value: "Deep" },
     ],
   },
   {
     id: "sun",
     question: "L'été, ta peau...",
     options: [
-      { label: "Brûle direct", value: "Brûle" },
-      { label: "Brûle puis bronze", value: "Neutre" },
-      { label: "Bronze facilement", value: "Bronze" },
+      { label: "Brûle direct", value: "Brûle" }, // Icône 🍅 supprimée
+      { label: "Brûle puis bronze", value: "Neutre" }, // Icône 🥕 supprimée
+      { label: "Bronze facilement", value: "Bronze" }, // Icône 🍪 supprimée
       { label: "Je ne sais pas", value: "Inconnu" },
     ],
   },
@@ -225,8 +227,8 @@ const QUESTIONS = [
     id: "jewelry",
     question: "Tes bijoux ?",
     options: [
-      { label: "L'Argent", value: "Argent" },
-      { label: "L'Or", value: "Or" },
+      { label: "L'Argent 🥈", value: "Argent" },
+      { label: "L'Or 🥇", value: "Or" },
       { label: "Les deux / Je ne sais pas", value: "Inconnu" },
     ],
   },
@@ -279,7 +281,6 @@ const QUESTIONS = [
       { label: "Cacher mes cernes", value: "Cernes" },
       { label: "Fixer mon maquillage", value: "Tenue" },
       { label: "Flouter mes pores", value: "Pores" },
-      { label: "Rien de spécial", value: "Aucun" }, // Ajout d'une option neutre
     ],
   },
 ];
@@ -294,69 +295,47 @@ export default function App() {
   const [shadeName, setShadeName] = useState("");
   const [qIdx, setQIdx] = useState(0);
   const [isSending, setIsSending] = useState(false);
-  const [nameError, setNameError] = useState(false);
-  const [showConsultationModal, setShowConsultationModal] = useState(false);
 
-  // Correction : Injection de styles dans useEffect
-  useEffect(() => {
-    // 1. Ajout de Tailwind CSS CDN pour les environnements qui ne le supportent pas nativement
-    // NOTE: Il est préférable d'intégrer Tailwind via un build process (PostCSS) pour la production.
-    // Cette méthode est OK pour un environnement de démo/prototype simple.
-    const tailwindScript = document.createElement('script');
-    tailwindScript.src = "https://cdn.tailwindcss.com";
-    tailwindScript.id = "tailwind-cdn"; // Pour pouvoir le retirer
-    document.head.appendChild(tailwindScript);
-
-    // 2. Ajout de la police Inter
-    const styleTag = document.createElement('style');
-    styleTag.type = 'text/css';
-    styleTag.id = "app-styles"; // Pour pouvoir le retirer
-    styleTag.innerHTML = `@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap'); body { font-family: 'Inter', sans-serif; }`;
-    document.head.appendChild(styleTag);
-
-    return () => {
-      // Suppression propre des éléments ajoutés pour éviter les duplications
-      const tw = document.getElementById("tailwind-cdn");
-      if(tw) document.head.removeChild(tw);
-      const styles = document.getElementById("app-styles");
-      if(styles) document.head.removeChild(styles);
-    };
-  }, []);
-
-  // Fonction utilitaire pour récupérer le label, déplacée hors du composant principal si possible ou utilisée via useCallback
-  const getLabel = useCallback((questionId, value) => {
+  const getLabel = (questionId, value) => {
     const q = QUESTIONS.find((q) => q.id === questionId);
     if (!q) return value;
-    if (Array.isArray(value)) {
+    if (Array.isArray(value))
       return value
         .map((v) => q.options.find((o) => o.value === v)?.label || v)
-        .filter(Boolean) // Retire les undefined/null
         .join(", ");
-    }
     return q.options.find((o) => o.value === value)?.label || value;
-  }, []); // Dépendances vides car QUESTIONS est constant
+  };
 
   const calculateShadeName = (tone, undertone) => {
-    // Logique simplifiée pour les noms de teintes Younique (touch mineral)
-    // NOTE : La logique pour le sous-ton Neutre était incomplète.
-    let shade = "Taffeta"; // Neutre par défaut
-    
-    if (tone === "VeryFair") {
-      shade = undertone === "Froid" ? "Scarlet" : (undertone === "Chaud" ? "Swan" : "Scarlet"); // Très Clair est souvent Froid ou Neutre/Froid
-    } else if (tone === "Fair") {
-      shade = undertone === "Froid" ? "Organza" : (undertone === "Chaud" ? "Lace" : "Velour");
-    } else if (tone === "Medium") {
-      shade = undertone === "Froid" ? "Chiffon" : (undertone === "Chaud" ? "Satin" : "Eyelet");
-    } else if (tone === "Dark") {
-      shade = undertone === "Froid" ? "Alaari" : (undertone === "Chaud" ? "Velvet" : "Charmeuse");
-    } else if (tone === "Deep") {
-      shade = undertone === "Froid" ? "Azlon" : (undertone === "Chaud" ? "Sanyan" : "Suede");
-    }
-    return shade;
+    if (tone === "VeryFair") return undertone === "Froid" ? "Scarlet" : "Swan";
+    if (tone === "Fair")
+      return undertone === "Froid"
+        ? "Organza"
+        : undertone === "Chaud"
+        ? "Lace"
+        : "Velour";
+    if (tone === "Medium")
+      return undertone === "Froid"
+        ? "Chiffon"
+        : undertone === "Chaud"
+        ? "Satin"
+        : "Eyelet";
+    if (tone === "Dark")
+      return undertone === "Froid"
+        ? "Alaari"
+        : undertone === "Chaud"
+        ? "Velvet"
+        : "Charmeuse";
+    if (tone === "Deep")
+      return undertone === "Froid"
+        ? "Azlon"
+        : undertone === "Chaud"
+        ? "Sanyan"
+        : "Suede";
+    return "Taffeta";
   };
 
   const calculateCreamCode = (tone, undertone) => {
-    // Logique simplifiée pour les codes de teintes crème (C/N/W)
     let letter = "N";
     if (undertone === "Froid") letter = "C";
     if (undertone === "Chaud") letter = "W";
@@ -369,37 +348,41 @@ export default function App() {
     return `${number}${letter}`;
   };
 
-  const analyzeProfile = useCallback((answers) => {
+  const analyzeProfile = (answers) => {
     let recs = [];
     let isComplex = false;
     let reason = "";
     let warning = "";
 
-    // 1. SOUS-TON (Calcul par vote majoritaire)
+    // SOUS-TON
     const votes = { Chaud: 0, Froid: 0, Neutre: 0 };
-    
-    if (answers.sun === "Brûle") votes.Froid++;
-    else if (answers.sun === "Bronze") votes.Chaud++;
-    else if (answers.sun === "Neutre") votes.Neutre++;
-    
-    if (answers.jewelry === "Argent") votes.Froid++;
-    else if (answers.jewelry === "Or") votes.Chaud++;
-    else if (answers.jewelry === "Inconnu") votes.Neutre++;
-    
+    if (answers.sun && answers.sun !== "Inconnu")
+      votes[
+        answers.sun === "Brûle"
+          ? "Froid"
+          : answers.sun === "Bronze"
+          ? "Chaud"
+          : "Neutre"
+      ]++;
+    if (answers.jewelry && answers.jewelry !== "Inconnu")
+      votes[
+        answers.jewelry === "Argent"
+          ? "Froid"
+          : answers.jewelry === "Or"
+          ? "Chaud"
+          : "Neutre"
+      ]++;
     if (answers.veins === "Bleues") votes.Froid++;
     else if (answers.veins === "Vertes") votes.Chaud++;
     else if (answers.veins === "Mix") votes.Neutre++;
 
-    // Détermination du sous-ton : on prend le max, s'il y a égalité, c'est neutre
     let uTone = "Neutre";
-    const maxVotes = Math.max(votes.Chaud, votes.Froid, votes.Neutre);
-    const maxVoters = Object.keys(votes).filter(k => votes[k] === maxVotes && maxVotes > 0);
-    
-    if (maxVoters.length === 1) {
-        uTone = maxVoters[0];
-    } // Sinon, reste 'Neutre' (ex: égalité entre Chaud/Froid ou tout est à 0/Neutre)
+    if (votes.Chaud > votes.Froid && votes.Chaud > votes.Neutre)
+      uTone = "Chaud";
+    else if (votes.Froid > votes.Chaud && votes.Froid > votes.Neutre)
+      uTone = "Froid";
+    else uTone = "Neutre";
 
-    // 2. CALCUL DE LA TEINTE
     let calculatedShade = "";
     if (answers.preference === "Creme") {
       calculatedShade = calculateCreamCode(answers.tone, uTone);
@@ -409,33 +392,32 @@ export default function App() {
       else if (answers.tone === "Medium") calculatedShade = "Light Medium";
       else calculatedShade = "Medium";
     } else {
-      // Poudre et Sérum utilisent la même nomenclature pour le calcul de base
       calculatedShade = calculateShadeName(answers.tone, uTone);
     }
-    
-    // 3. LOGIQUE PRODUITS (Fond de Teint & Avertissements)
+
+    // LOGIQUE PRODUITS
     let finalProduct = "";
-    
-    // Les teintes de la Poudre Compacte sont un peu différentes (pas de Taffeta, Satin, Velvet, Cypress, Charmeuse dans la POUDRE PRESSED)
-    const riskOrangeTeintes = ["Taffeta", "Satin", "Velvet", "Cypress", "Charmeuse"];
-    
+    const isRiskOrange = [
+      "Taffeta",
+      "Satin",
+      "Velvet",
+      "Cypress",
+      "Charmeuse",
+    ].includes(calculatedShade);
+
     if (answers.preference === "Poudre") {
-      if (riskOrangeTeintes.includes(calculatedShade)) {
-        // Redirection vers le sérum (liquide) car le risque d'oxydation de la poudre est trop grand
+      if (isRiskOrange) {
         finalProduct = "fdt_mineral";
-        warning = `⚠️ Je t'ai orientée vers le Sérum (Liquide) car la Poudre Compacte peut ressortir trop orangée sur les teintes ${calculatedShade}.`;
+        warning = `⚠️ Je t'ai orientée vers le Sérum car la Poudre ressort trop orangée sur les teintes ${calculatedShade}.`;
       } else if (calculatedShade === "Eyelet") {
-        // 'Eyelet' n'existe pas dans la poudre, on recommande la plus proche
         finalProduct = "fdt_poudre";
-        calculatedShade = "Chiffon (Poudre)";
+        calculatedShade = "Chiffon";
         warning = "ℹ️ Correspondance Poudre : Chiffon.";
       } else if (calculatedShade === "Jacquard") {
-        // 'Jacquard' n'existe pas dans la poudre, on recommande la plus proche
         finalProduct = "fdt_poudre";
-        calculatedShade = "Linen (Poudre)";
+        calculatedShade = "Linen";
         warning = "ℹ️ Correspondance Poudre : Linen.";
       } else {
-        // Poudre OK
         finalProduct = "fdt_poudre";
       }
     } else if (answers.preference === "BB") {
@@ -443,132 +425,92 @@ export default function App() {
     } else if (answers.preference === "Creme") {
       finalProduct = "fdt_creme";
     } else {
-      // Par défaut (Serum)
       finalProduct = "fdt_mineral";
     }
-    
-    // 4. SOINS ET COMPLÉMENTS
-    recs.push(PRODUCTS_DB.find((p) => p.id === finalProduct)); // FDT principal
 
+    setShadeName(calculatedShade);
+    setAlertReason(warning);
+
+    // SOINS
     const conditions = Array.isArray(answers.skinCondition)
       ? answers.skinCondition
       : [answers.skinCondition];
-    
-    // Soin Profond (Sérums)
     if (conditions.includes("Mature")) {
       recs.push(PRODUCTS_DB.find((p) => p.id === "uplift"));
       recs.push(PRODUCTS_DB.find((p) => p.id === "youth"));
-    } else if (conditions.includes("Imperfections") || answers.skinType === "Grasse") {
+    } else if (
+      conditions.includes("Imperfections") ||
+      answers.skinType === "Grasse"
+    ) {
       recs.push(PRODUCTS_DB.find((p) => p.id === "glow"));
-      if (answers.skinType === "Grasse") recs.push(PRODUCTS_DB.find((p) => p.id === "detox"));
+      if (answers.skinType === "Grasse")
+        recs.push(PRODUCTS_DB.find((p) => p.id === "detox"));
     } else if (conditions.includes("Déshydratée")) {
       recs.push(PRODUCTS_DB.find((p) => p.id === "youth"));
     } else {
       recs.push(PRODUCTS_DB.find((p) => p.id === "gel"));
     }
 
-    // Base et Finition
-    recs.push(PRODUCTS_DB.find((p) => p.id === "base_illu")); // Base recommandée par défaut
+    recs.push(PRODUCTS_DB.find((p) => p.id === "base_illu"));
+    recs.push(PRODUCTS_DB.find((p) => p.id === finalProduct));
 
     if (answers.concern === "Cernes") {
       recs.push(PRODUCTS_DB.find((p) => p.id === "concealer"));
       recs.push(PRODUCTS_DB.find((p) => p.id === "eye_cream"));
       recs.push(PRODUCTS_DB.find((p) => p.id === "eye_mask"));
     }
-    
-    // Ajout des fixateurs/matifiants
-    const needsMattifyingOrSettingPowder = answers.skinType === "Grasse" || answers.concern === "Pores" || answers.concern === "Tenue";
-    if (needsMattifyingOrSettingPowder) {
-        recs.push(PRODUCTS_DB.find((p) => p.id === "powder_prime"));
-    }
-    
-    // Le spray est plus pour la tenue sur peau sèche/normale
-    const needsSettingSpray = answers.concern === "Tenue" && (answers.skinType === "Sèche" || answers.skinType === "Mixte");
-    if (needsSettingSpray) {
-        recs.push(PRODUCTS_DB.find((p) => p.id === "spray"));
-    }
+    if (
+      answers.skinType === "Grasse" ||
+      answers.concern === "Pores" ||
+      answers.concern === "Tenue"
+    )
+      recs.push(PRODUCTS_DB.find((p) => p.id === "powder_prime"));
+    if (answers.concern === "Tenue" && answers.skinType === "Sèche")
+      recs.push(PRODUCTS_DB.find((p) => p.id === "spray"));
 
-
-    // 5. GESTION DES CAS COMPLEXES (Alerte Sonia)
     if (answers.tone === "Deep" && answers.sun === "Brûle") {
       isComplex = true;
-      reason = "Incohérence Teint Très Foncé / Ne bronze pas (Brûle).";
+      reason = "Incohérence Teint/Soleil.";
     }
     const unknownCount = Object.values(answers).filter(
-      (v) => (Array.isArray(v) && v.includes("Inconnu")) || v === "Inconnu"
+      (v) => v === "Inconnu"
     ).length;
     if (unknownCount >= 2) {
       isComplex = true;
-      reason = "Trop d'incertitudes (Inconnu ou Mix).";
+      reason = "Trop d'incertitudes.";
     }
 
-    // Correction: Filter pour retirer les undefined au cas où find n'a rien trouvé
-    const finalRecs = recs.filter(Boolean);
+    setStatus(isComplex ? "complex" : "standard");
+    if (isComplex) setAlertReason(reason);
+    setRecommendations(recs);
 
     return {
       shadeCalculated: calculatedShade,
       statusCalculated: isComplex ? "complex" : "standard",
       reason: warning || reason,
-      recs: finalRecs,
     };
-  }, [getLabel]); // Dépendance ajoutée pour getLabel
-
-  // Nouveau useEffect pour calculer les résultats après avoir répondu à toutes les questions
-  useEffect(() => {
-    if (step === "capture") {
-      // Assurez-vous que l'analyse est lancée pour initialiser les états
-      const { shadeCalculated, statusCalculated, reason, recs } = analyzeProfile(quizAnswers);
-      setShadeName(shadeCalculated);
-      setStatus(statusCalculated);
-      setAlertReason(reason);
-      setRecommendations(recs);
-    }
-  }, [step, quizAnswers, analyzeProfile]);
-
+  };
 
   const handleQuizAnswer = (val) => {
     const currentQ = QUESTIONS[qIdx];
-    let newAns = { ...quizAnswers };
-
     if (currentQ.multi) {
       const currentVals = quizAnswers[currentQ.id] || [];
       let newVals;
-      if (currentVals.includes(val)) {
+      if (currentVals.includes(val))
         newVals = currentVals.filter((v) => v !== val);
-      } else {
-        newVals = [...currentVals, val];
-      }
-      newAns[currentQ.id] = newVals;
+      else newVals = [...currentVals, val];
+      setQuizAnswers({ ...quizAnswers, [currentQ.id]: newVals });
     } else {
-      newAns[currentQ.id] = val;
-    }
-    
-    setQuizAnswers(newAns);
-    
-    // Pour les questions à choix unique, on passe à la suivante après un délai
-    if (!currentQ.multi) {
-      setTimeout(() => {
-        if (qIdx < QUESTIONS.length - 1) setQIdx(qIdx + 1);
-        else setStep("capture");
-      }, 200);
+      const newAns = { ...quizAnswers, [currentQ.id]: val };
+      setQuizAnswers(newAns);
+      if (qIdx < QUESTIONS.length - 1) setQIdx(qIdx + 1);
+      else setStep("capture");
     }
   };
 
   const handleNextQuestion = () => {
-    const currentQ = QUESTIONS[qIdx];
-    // Vérifie qu'au moins un choix est fait pour les multi-choix avant de passer
-    if (currentQ.multi && (!quizAnswers[currentQ.id] || quizAnswers[currentQ.id].length === 0)) {
-        // Optionnel: ajouter un état d'erreur visuelle ici si on voulait être plus strict
-        return; 
-    }
-    
     if (qIdx < QUESTIONS.length - 1) setQIdx(qIdx + 1);
     else setStep("capture");
-  };
-  
-  const handlePrevQuestion = () => {
-    if (qIdx > 0) setQIdx(qIdx - 1);
-    else setStep("welcome");
   };
 
   const sendDataToSonia = async (e) => {
@@ -576,9 +518,8 @@ export default function App() {
     if (!userInfo.name || !userInfo.email) return;
     setIsSending(true);
 
-    // On récupère le résultat de l'analyse qui a déjà été effectuée dans l'useEffect/analyzeProfile
-    // On peut la relancer pour être sûr, mais c'est redondant
-    // const analysisResult = analyzeProfile(quizAnswers); 
+    // On lance l'analyse et on récupère le résultat pour l'envoyer
+    const analysisResult = analyzeProfile(quizAnswers);
 
     // --- ENVOI VERS MAKE (WEBHOOK) ---
     if (MAKE_WEBHOOK_URL && MAKE_WEBHOOK_URL.startsWith("http")) {
@@ -586,7 +527,6 @@ export default function App() {
         const payload = {
           name: userInfo.name,
           email: userInfo.email,
-          // Utilisation du getLabel avec les states déjà calculés
           tone: getLabel("tone", quizAnswers.tone),
           undertone: `${getLabel("sun", quizAnswers.sun)} / ${getLabel(
             "veins",
@@ -596,9 +536,9 @@ export default function App() {
           skinCondition: getLabel("skinCondition", quizAnswers.skinCondition),
           preference: getLabel("preference", quizAnswers.preference),
           concern: getLabel("concern", quizAnswers.concern),
-          shade: shadeName, // Teinte déjà calculée
-          status: status, // Statut déjà calculé
-          alert: alertReason, // Raison déjà calculée
+          shade: analysisResult.shadeCalculated,
+          status: analysisResult.statusCalculated,
+          alert: analysisResult.reason,
           date: new Date().toISOString(),
         };
 
@@ -611,7 +551,7 @@ export default function App() {
         if (response.ok) {
           console.log("Envoyé à Make avec succès !");
         } else {
-          console.error("Erreur serveur Make:", response.status);
+          console.error("Erreur serveur Make");
         }
       } catch (err) {
         console.log("Erreur technique envoi", err);
@@ -623,45 +563,9 @@ export default function App() {
       setStep("results");
     }, 1500);
   };
-  
-  const ConsultationModal = () => (
-    <div className="fixed inset-0 bg-slate-900/70 z-50 flex items-center justify-center p-4" onClick={() => setShowConsultationModal(false)}>
-      <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl transform transition-all scale-100" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center gap-3 mb-4">
-          <MessageCircle size={28} className="text-purple-600"/>
-          <h3 className="text-xl font-black text-slate-800">Conseil Expert Teint</h3>
-        </div>
-        <p className="text-sm text-slate-600 mb-4">
-          Pour valider ta teinte à coup sûr, envoie-moi une photo en DM sur Instagram.
-        </p>
-        
-        <div className="bg-purple-50 p-4 rounded-xl border border-purple-100 mb-6">
-          <p className="text-xs font-bold text-purple-800 uppercase mb-2">Instructions Photo Idéale :</p>
-          <ul className="list-disc list-inside text-sm text-slate-700 space-y-1">
-            <li>Place-toi face à une **fenêtre** (lumière naturelle).</li>
-            <li>Évite le soleil direct (pas de contre-jour).</li>
-            <li>Idéalement, une fenêtre côté Nord ou Ombre.</li>
-            <li>Vérifie que la photo rend fidèlement la couleur de ta peau.</li>
-          </ul>
-        </div>
-
-        <a
-          href={MESSENGER_LINK}
-          target="_blank"
-          rel="noreferrer"
-          onClick={() => setShowConsultationModal(false)}
-          className="w-full py-3 bg-purple-600 text-white rounded-xl font-bold text-lg shadow-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
-        >
-          <MessageCircle size={20} /> Envoyer ma photo sur Insta DM
-        </a>
-      </div>
-    </div>
-  );
 
   return (
     <GradientBackground>
-      {showConsultationModal && <ConsultationModal />}
-      
       {step === "welcome" && (
         <div className="h-full flex flex-col items-center justify-center p-6 text-center">
           <div className="w-20 h-20 bg-slate-900 rounded-full flex items-center justify-center mb-6 shadow-xl">
@@ -683,48 +587,30 @@ export default function App() {
                 type="text"
                 placeholder="Ton Prénom"
                 value={userInfo.name}
-                onChange={(e) => {
-                  setUserInfo({ ...userInfo, name: e.target.value });
-                  if (e.target.value) setNameError(false);
-                }}
-                className={`w-full p-4 pl-12 rounded-xl bg-slate-50 border ${nameError ? 'border-red-500' : 'border-slate-200'} focus:border-purple-500 outline-none font-bold text-slate-800`}
+                onChange={(e) =>
+                  setUserInfo({ ...userInfo, name: e.target.value })
+                }
+                className="w-full p-4 pl-12 rounded-xl bg-slate-50 border border-slate-200 focus:border-purple-500 outline-none font-bold text-slate-800"
               />
             </div>
-            {nameError && (
-              <p className="text-red-500 text-sm font-semibold mt-1">⚠️ Veuillez entrer votre prénom pour commencer.</p>
-            )}
             <button
-              onClick={() => {
-                if (userInfo.name) {
-                  setStep("quiz");
-                } else {
-                  setNameError(true);
-                }
-              }}
+              onClick={() =>
+                userInfo.name ? setStep("quiz") : alert("Entre ton prénom !")
+              }
               className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold text-lg shadow-lg hover:scale-[1.02] transition-transform flex items-center justify-center gap-2"
             >
               Commencer <ArrowRight size={18} />
             </button>
-            
           </div>
         </div>
       )}
 
       {step === "quiz" && (
         <div className="h-full flex flex-col p-6 bg-white">
-            {/* Bouton de retour */}
-            <div className="absolute top-4 left-4 z-20">
-                <button
-                    onClick={handlePrevQuestion}
-                    className="p-2 bg-slate-50/80 rounded-full hover:bg-slate-100 transition-colors"
-                >
-                    <ChevronLeft size={20} className="text-slate-600" />
-                </button>
-            </div>
-            
-          <div className="mb-6 mt-4">
+          <div className="mb-6">
             <div
               className="flex justify-between items-center text-xs font-bold text-slate-400 mb-2"
+              style={{ display: "flex", justifyContent: "space-between" }}
             >
               <span>
                 QUESTION {qIdx + 1} / {QUESTIONS.length}
@@ -738,7 +624,6 @@ export default function App() {
                 className="h-full bg-purple-600 transition-all duration-300"
                 style={{ width: `${((qIdx + 1) / QUESTIONS.length) * 100}%` }}
               ></div>
-              
             </div>
           </div>
           <div className="flex-1 flex flex-col justify-center">
@@ -765,14 +650,11 @@ export default function App() {
                         : "bg-white text-slate-700 border-slate-200 hover:border-purple-500"
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      {QUESTIONS[qIdx].id === 'tone' && opt.color && (
-                        <span className={`w-6 h-6 rounded-full inline-block border ${isSelected ? 'border-white/50' : 'border-slate-300/50'} flex-shrink-0 ${opt.color}`}></span>
-                      )}
-                      <span>{opt.label}</span>
-                    </div>
+                    
+                    <span>{opt.label}</span>
+
                     {isSelected && (
-                      <CheckCircle2 size={20} className="text-white" />
+                       <CheckCircle2 size={20} className="text-white" />
                     )}
                   </button>
                 );
@@ -781,9 +663,7 @@ export default function App() {
             {QUESTIONS[qIdx].multi && (
               <button
                 onClick={handleNextQuestion}
-                // S'assure qu'au moins un choix est fait pour les multi-choix
-                disabled={!quizAnswers[QUESTIONS[qIdx].id] || (quizAnswers[QUESTIONS[qIdx].id].length === 0)} 
-                className="mt-6 w-full py-4 bg-slate-900 text-white rounded-xl font-bold shadow-lg hover:bg-slate-800 transition-all disabled:opacity-50"
+                className="mt-6 w-full py-4 bg-slate-900 text-white rounded-xl font-bold shadow-lg hover:bg-slate-800 transition-all"
               >
                 Valider mes choix
               </button>
@@ -794,16 +674,6 @@ export default function App() {
 
       {step === "capture" && (
         <div className="h-full flex flex-col justify-center p-8 bg-white text-center">
-            {/* Bouton de retour */}
-            <div className="absolute top-4 left-4 z-20">
-                <button
-                    onClick={() => setStep("quiz")} // Retour au quiz (dernière question)
-                    className="p-2 bg-slate-50/80 rounded-full hover:bg-slate-100 transition-colors"
-                >
-                    <ChevronLeft size={20} className="text-slate-600" />
-                </button>
-            </div>
-            
           <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 size={32} />
           </div>
@@ -859,7 +729,6 @@ export default function App() {
                   {getLabel("sun", quizAnswers.sun)} / Veines{" "}
                   {getLabel("veins", quizAnswers.veins)}
                 </p>
-                
                 <p>
                   <strong>Peau :</strong>{" "}
                   {getLabel("skinType", quizAnswers.skinType)}
@@ -883,20 +752,21 @@ export default function App() {
                     <h2 className="font-bold text-amber-800">
                       Analyse Requise
                     </h2>
-                    <span className="text-xs font-black text-amber-700 ml-auto bg-amber-200 px-2 py-0.5 rounded-full">CAS COMPLEXE</span>
                   </div>
                   <p className="text-sm text-amber-800 leading-relaxed">
                     Ton profil est atypique ({alertReason}). Pour éviter une
                     erreur, <strong>je dois valider ta teinte.</strong>
                   </p>
                 </div>
-                {/* Bouton générique pour ouvrir la modale de consultation */}
-                <button
-                  onClick={() => setShowConsultationModal(true)}
-                  className="w-full py-4 bg-amber-500 text-white rounded-xl font-bold text-lg shadow-lg shadow-amber-200 hover:bg-amber-600 transition-colors flex items-center justify-center gap-2"
+                {/* Bouton pour ouvrir l'Instagram DM */}
+                <a
+                  href={INSTAGRAM_DM_LINK}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full py-4 bg-amber-500 text-white rounded-xl font-bold text-lg shadow-lg shadow-amber-200 hover:bg-amber-600 transition-colors flex items-center justify-center gap-2 animate-pulse"
                 >
-                  <MessageCircle size={24} /> Discuter avec Sonia
-                </button>
+                  <MessageCircle size={24} /> Me contacter par Instagram DM
+                </a>
               </>
             ) : (
               <>
@@ -905,7 +775,7 @@ export default function App() {
                     <CheckCircle2 size={16} /> Profil Validé
                   </div>
                   <h2 className="text-xl font-black text-slate-800">
-                    Teinte : <span className="text-purple-600">{shadeName}</span>
+                    Teinte : {shadeName}
                   </h2>
                   {alertReason && (
                     <div className="mt-3 bg-blue-50 text-blue-800 text-xs p-3 rounded-xl border border-blue-100 font-medium text-left">
@@ -914,17 +784,26 @@ export default function App() {
                   )}
                 </div>
                 <GuaranteeBadge />
+                
+                {/* Nouveau bloc Demander conseil avec instructions photo */}
                 <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-4 text-center">
-                  <p className="text-sm text-blue-800 font-medium mb-3">
-                    Tu as un doute sur ta teinte ? Je peux vérifier ta photo.
+                  <p className="text-sm text-blue-800 font-bold mb-3">
+                    Tu as un doute ? Envoie-moi ta photo pour une validation manuelle !
                   </p>
-                  {/* Bouton pour ouvrir la modale de consultation */}
-                  <button
-                    onClick={() => setShowConsultationModal(true)}
+                  <p className="text-xs text-blue-700 mb-4 leading-relaxed bg-blue-100 p-2 rounded-lg">
+                    📸 <strong>Conseil Photo :</strong> Prends la photo <strong>face à une fenêtre</strong>,
+                    mais <strong>jamais face au soleil</strong> direct. Idéalement, une fenêtre côté
+                    Nord (lumière naturelle indirecte) pour que les couleurs soient fidèles.
+                  </p>
+                  {/* Lien vers l'Instagram DM */}
+                  <a
+                    href={INSTAGRAM_DM_LINK}
+                    target="_blank"
+                    rel="noreferrer"
                     className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase hover:bg-blue-700 transition-colors"
                   >
-                    <MessageCircle size={14} /> Demander conseil
-                  </button>
+                    <MessageCircle size={14} /> Demander conseil (Instagram DM)
+                  </a>
                 </div>
               </>
             )}
@@ -936,13 +815,14 @@ export default function App() {
                 Ta routine recommandée
               </p>
               <div className="space-y-3 opacity-90">
-                {recommendations.map((p) => (
+                {recommendations.map((p, i) => (
                   <div
-                    key={p.id} // Clé corrigée
-                    className="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex gap-3 items-center"
+                    key={i}
+                    className="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex gap-3 items-center animate-in slide-in-from-bottom-4"
                   >
-                    <div className="text-sm bg-slate-50 w-12 h-12 rounded-lg flex items-center justify-center border border-slate-100 font-bold text-slate-600 flex-shrink-0">
-                      {p.category.charAt(0)} 
+                    {/* Les emplacements d'icônes sont volontairement vides */}
+                    <div className="text-2xl bg-slate-50 w-12 h-12 rounded-lg flex items-center justify-center border border-slate-100">
+                      {p.img}
                     </div>
                     <div className="flex-1">
                       <h3 className="font-bold text-slate-800 text-sm">
@@ -972,7 +852,7 @@ export default function App() {
                   recommendations.find((p) => p.id === "fdt_poudre") && (
                     <div className="bg-purple-50 p-3 rounded-xl border border-purple-100 mt-3 text-xs text-purple-800">
                       💧 <strong>Conseil Peau Mature :</strong> Excellent choix
-                      ! Cette poudre est hydratante. Applique-la au 
+                      ! Cette poudre est hydratante. Applique-la au
                       <strong>gros pinceau</strong>.
                     </div>
                   )}
