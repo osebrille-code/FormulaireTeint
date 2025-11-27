@@ -235,16 +235,22 @@ const analyzeProfile = (answers) => {
       reason = "Trop d'incertitudes.";
     }
 
-
     // 6. PRÉPARATION DU RÉSULTAT FINAL
-    const finalRecs = recs.filter(r => r); 
+    const finalRecs = recs.filter(r => r).map(p => ({
+        // On simplifie les objets pour assurer la sérialisation JSON :
+        id: p.id,
+        name: p.name,
+        category: p.category,
+        desc: p.desc,
+        url: p.url,
+    }));
 
     return {
       shadeCalculated: calculatedShade,
       statusCalculated: isComplex ? "complex" : "standard",
       alert: warning || reason,
+      // On retourne les objets produits simplifiés
       recommendations: finalRecs, 
-      // On retourne le sous-ton calculé pour l'envoi à Make (si nécessaire)
       analysisForMake: {
           undertoneCalculated: uTone,
       }
