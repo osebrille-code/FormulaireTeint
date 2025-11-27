@@ -1,8 +1,19 @@
-// --- api/diagnose.js (Version Maximisée pour Vercel) ---
+// --- api/diagnose.js (Version Complète pour Vercel) ---
 
 export default async function handler(req, res) {
+    // Gestion CORS
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+    
+    if (req.method === 'OPTIONS') {
+        res.status(200).end();
+        return;
+    }
+
     if (req.method !== 'POST') {
-        return res.status(405).send('Method Not Allowed');
+        return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
     const { answers } = req.body; 
@@ -12,8 +23,6 @@ export default async function handler(req, res) {
     }
 
     try {
-        // Définition de TOUTE la logique et des données à l'intérieur de la portée de la fonction handler
-        
         // =========================================================
         // 1. BASE DE DONNÉES PRODUITS
         // =========================================================
@@ -66,11 +75,9 @@ export default async function handler(req, res) {
           { id: "spray", name: "Brume Prime & Set", category: "Finition", desc: "Fixation extrême.", url: LINKS.SPRAY, },
         ];
 
-
         // =========================================================
-        // 2. FONCTIONS DE CALCUL LOCALES
+        // 2. FONCTIONS DE CALCUL
         // =========================================================
-
         const calculateShadeName = (tone, undertone) => {
             if (tone === "VeryFair") return undertone === "Froid" ? "Scarlet" : "Swan";
             if (tone === "Fair")
@@ -98,7 +105,7 @@ export default async function handler(req, res) {
                 ? "Sanyan"
                 : "Suede";
             return "Taffeta";
-          };
+        };
 
         const calculateCreamCode = (tone, undertone) => {
             let letter = "N";
@@ -111,12 +118,11 @@ export default async function handler(req, res) {
             if (tone === "Dark") number = "7";
             if (tone === "Deep") number = "9";
             return `${number}${letter}`;
-          };
+        };
 
         // =========================================================
         // 3. FONCTION D'ANALYSE PRINCIPALE
         // =========================================================
-
         const analyzeProfile = (answers) => {
             let recs = [];
             let isComplex = false;
@@ -151,7 +157,6 @@ export default async function handler(req, res) {
             else if (votes.Froid > votes.Chaud && votes.Froid > votes.Neutre)
               uTone = "Froid";
             else uTone = "Neutre";
-
 
             // 2. CALCUL DE LA TEINTE
             let calculatedShade = "";
@@ -199,7 +204,6 @@ export default async function handler(req, res) {
               finalProduct = "fdt_mineral";
             }
 
-
             // 4. DÉTERMINATION DES RECOMMANDATIONS SOINS
             const conditions = Array.isArray(answers.skinCondition)
               ? answers.skinCondition
@@ -239,7 +243,6 @@ export default async function handler(req, res) {
             if (answers.concern === "Tenue" && answers.skinType === "Sèche")
               recs.push(PRODUCTS_DB.find((p) => p.id === "spray"));
 
-
             // 5. DÉTERMINATION DU STATUT COMPLEXE
             if (answers.tone === "Deep" && answers.sun === "Brûle") {
               isComplex = true;
@@ -253,8 +256,7 @@ export default async function handler(req, res) {
               reason = "Trop d'incertitudes.";
             }
 
-
-            // 6. PRÉPARATION DU RÉSULTAT FINAL (Simplification garantie)
+            // 6. PRÉPARATION DU RÉSULTAT FINAL
             const finalRecs = recs.filter(r => r).map(p => ({
                 id: p.id,
                 name: p.name,
@@ -276,11 +278,13 @@ export default async function handler(req, res) {
 
         // --- EXECUTION ---
         const result = analyzeProfile(answers); 
-        res.status(200).json(result); 
+        return res.status(200).json(result); 
 
     } catch (error) {
-        // Log d'erreur détaillé qui devrait APPARAÎTRE DANS VERCEL
         console.error("Erreur critique dans analyzeProfile:", error.message, error.stack);
-        res.status(500).json({ error: 'Internal Server Error during diagnosis.' });
+        return res.status(500).json({ 
+            error: 'Internal Server Error during diagnosis.',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 }
