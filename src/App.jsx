@@ -11,60 +11,18 @@ import {
   ShoppingBag,
   CheckSquare,
   ClipboardList,
-  ArrowLeft, // Importé pour le bouton retour
+  ArrowLeft,
 } from "lucide-react";
 
-// --- 1. TES LIENS KOMIGO ---
-// Les liens produits restent ici car ils sont publics
+// --- CONFIGURATION ---
 const SHOP_ROOT = "https://komigo.me/soniabonnefoy_vfvnvb/";
 
-const LINKS = {
-  FOUNDATION_LIQUID:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-SerumFoundation-Alaari",
-  FOUNDATION_BB:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-BBTinted-FairLight",
-  FOUNDATION_CREME:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-CreamFoundation-1C_P",
-  FOUNDATION_POWDER:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-PressedPowder-Cabretta",
-  BASE_ILLUMINATING:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-IlluminatingPrimer",
-  POWDER_PRIME_SET:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-PrimeSetPowder",
-  SPRAY: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-PrimeSetMist",
-  SKINCARE_YOUTH:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-YouthplexionNightSerum",
-  SKINCARE_GLOW:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-GlowplexionSerum",
-  SKINCARE_UPLIFT:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-UpliftBeautyOil",
-  SKINCARE_GEL:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-YouologyDayMoisturizer",
-  SKINCARE_MASK:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-RoyaltyDetoxMask",
-  EYE_CREAM:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-YouniversalEyeCream",
-  EYE_MASK: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-EyeMask",
-  CONCEALER: SHOP_ROOT,
-};
-
-// --- 2. CONFIGURATION AUTOMATISATION & API ---
-const MAKE_WEBHOOK_URL =
-  "https://hook.eu1.make.com/on3dp8ol1rk0pymb8fo67mpewz98yg86";
-
-// C'EST L'ADRESSE DE VOTRE FONCTION VERCEL SECRÈTE
+const MAKE_WEBHOOK_URL = "https://hook.eu1.make.com/on3dp8ol1rk0pymb8fo67mpewz98yg86";
 const ALGORITHM_API_URL = "/api/diagnose"; 
-
-// Lien vers l'Instagram DM
 const INSTAGRAM_DM_LINK = "https://ig.me/m/ton_identifiant_instagram_ici"; 
-
-// Lien vers la politique de confidentialité
 const PRIVACY_POLICY_LINK = "/politique-confidentialite.html";
 
-// La base de données produits n'est plus ici, elle est dans api/diagnose.js
-const PRODUCTS_DB_PLACEHOLDER = []; 
-
-
+// --- COMPOSANTS UI ---
 const GradientBackground = ({ children }) => (
   <div className="min-h-screen w-full bg-gradient-to-br from-rose-50 via-purple-50 to-indigo-50 p-4 flex flex-col items-center justify-center relative font-sans">
     <div className="w-full max-w-md bg-white/95 backdrop-blur-xl rounded-[2rem] shadow-2xl overflow-hidden flex flex-col relative z-10 border border-white/60 min-h-[600px] max-h-[90vh]">
@@ -73,7 +31,6 @@ const GradientBackground = ({ children }) => (
   </div>
 );
 
-// Composant de bouton de retour
 const BackButton = ({ onClick }) => (
   <button
     onClick={onClick}
@@ -84,7 +41,6 @@ const BackButton = ({ onClick }) => (
   </button>
 );
 
-// Mise à jour de la Garantie Love It
 const GuaranteeBadge = () => (
   <div className="bg-green-50 border border-green-100 rounded-xl p-3 flex items-start gap-3 mb-4">
     <ShieldCheck className="text-green-600 flex-shrink-0" size={20} />
@@ -99,6 +55,7 @@ const GuaranteeBadge = () => (
   </div>
 );
 
+// --- QUESTIONS ---
 const QUESTIONS = [
   {
     id: "tone",
@@ -140,7 +97,6 @@ const QUESTIONS = [
       { label: "Je ne sais pas", value: "Inconnu" },
     ],
   },
-
   {
     id: "skinType",
     question: "Ton type de peau ?",
@@ -183,11 +139,12 @@ const QUESTIONS = [
   },
 ];
 
+// --- COMPOSANT PRINCIPAL ---
 export default function App() {
   const [step, setStep] = useState("welcome");
   const [userInfo, setUserInfo] = useState({ name: "", email: "" });
   const [quizAnswers, setQuizAnswers] = useState({});
-  const [recommendations, setRecommendations] = useState(PRODUCTS_DB_PLACEHOLDER);
+  const [recommendations, setRecommendations] = useState([]);
   const [status, setStatus] = useState("standard");
   const [alertReason, setAlertReason] = useState("");
   const [shadeName, setShadeName] = useState("");
@@ -231,18 +188,15 @@ export default function App() {
       if (qIdx > 0) {
         setQIdx(qIdx - 1);
       } else {
-        // Retour à la page de bienvenue
         setStep("welcome");
       }
     } else if (step === "capture") {
       setStep("quiz");
-      setQIdx(QUESTIONS.length - 1); // Revenir à la dernière question du quiz
+      setQIdx(QUESTIONS.length - 1);
     } else if (step === "results") {
-      // Pour les résultats, on renvoie à la page de capture
       setStep("capture");
     }
   };
-
 
   const sendDataToSonia = async (e) => {
     e.preventDefault();
@@ -251,59 +205,62 @@ export default function App() {
     
     let analysisResult = null;
 
-
-    // --- 1. APPEL À L'ALGORITHME SECRET (Côté Serveur Vercel) ---
+    // --- 1. APPEL À L'ALGORITHME SECRET ---
     try {
+        console.log("📤 Envoi vers API:", ALGORITHM_API_URL);
+        console.log("📋 Données envoyées:", quizAnswers);
+        
         const apiResponse = await fetch(ALGORITHM_API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ answers: quizAnswers }), 
         });
 
+        console.log("📥 Réponse API statut:", apiResponse.status);
+
         if (apiResponse.ok) {
             const data = await apiResponse.json();
+            console.log("✅ Données reçues:", data);
             analysisResult = data;
             
-            // Mise à jour de l'état du composant avec les données secrètes reçues
             setShadeName(data.shadeCalculated);
             setStatus(data.statusCalculated);
             setAlertReason(data.alert);
             setRecommendations(data.recommendations);
         } else {
-            console.error("Erreur serveur API d'analyse. Statut:", apiResponse.status);
-            alert("Erreur: Le diagnostic n'a pas pu être calculé. Veuillez réessayer.");
+            const errorText = await apiResponse.text();
+            console.error("❌ Erreur serveur API. Statut:", apiResponse.status);
+            console.error("❌ Réponse:", errorText);
+            alert(`Erreur ${apiResponse.status}: Le diagnostic n'a pas pu être calculé.\n\nDétails: ${errorText}`);
             setIsSending(false);
             return;
         }
     } catch (err) {
-        console.error("Erreur technique de connexion à l'API", err);
-        alert("Erreur de connexion. Veuillez vérifier votre réseau.");
+        console.error("❌ Erreur technique de connexion à l'API", err);
+        alert("Erreur de connexion au serveur.\n\nDétails: " + err.message);
         setIsSending(false);
         return;
     }
 
-
-    // --- 2. ENVOI VERS MAKE (WEBHOOK) ---
+    // --- 2. ENVOI VERS MAKE ---
     if (MAKE_WEBHOOK_URL && MAKE_WEBHOOK_URL.startsWith("http") && analysisResult) {
       try {
         const payload = {
           name: userInfo.name,
           email: userInfo.email,
           tone: getLabel("tone", quizAnswers.tone),
-          undertone: `${getLabel("sun", quizAnswers.sun)} / ${getLabel(
-            "veins",
-            quizAnswers.veins
-          )}`,
+          undertone: `${getLabel("sun", quizAnswers.sun)} / ${getLabel("veins", quizAnswers.veins)}`,
           skinType: getLabel("skinType", quizAnswers.skinType),
           skinCondition: getLabel("skinCondition", quizAnswers.skinCondition),
           preference: getLabel("preference", quizAnswers.preference),
           concern: getLabel("concern", quizAnswers.concern),
-          
           shade: analysisResult.shadeCalculated, 
           status: analysisResult.statusCalculated,
           alert: analysisResult.alert,
           date: new Date().toISOString(),
         };
+
+        console.log("📤 Envoi vers Make:", payload);
 
         const response = await fetch(MAKE_WEBHOOK_URL, {
           method: "POST",
@@ -312,27 +269,25 @@ export default function App() {
         });
 
         if (!response.ok) {
-          console.error("Erreur serveur Make");
+          console.error("❌ Erreur serveur Make");
+        } else {
+          console.log("✅ Données envoyées à Make avec succès");
         }
       } catch (err) {
-        console.log("Erreur technique envoi Make", err);
+        console.error("❌ Erreur technique envoi Make", err);
       }
     }
 
-    // Affichage des résultats
     setTimeout(() => {
       setIsSending(false);
       setStep("results");
     }, 500);
   };
 
-  // Condition pour afficher le bouton retour
   const showBackButton = (step === "quiz") || (step === "capture") || (step === "results" && status === "complex");
-
 
   return (
     <GradientBackground>
-
       {showBackButton && <BackButton onClick={handleBack} />}
 
       {step === "welcome" && (
@@ -371,7 +326,6 @@ export default function App() {
               Commencer <ArrowRight size={18} />
             </button>
             
-            {/* Ajout du lien vers la politique de confidentialité */}
             <div className="pt-4">
               <a 
                 href={PRIVACY_POLICY_LINK} 
@@ -388,7 +342,7 @@ export default function App() {
 
       {step === "quiz" && (
         <div className="h-full flex flex-col p-6 bg-white">
-          <div className="mb-6 mt-12"> {/* Marge ajoutée pour le bouton retour */}
+          <div className="mb-6 mt-12">
             <div
               className="flex justify-between items-center text-xs font-bold text-slate-400 mb-2"
               style={{ display: "flex", justifyContent: "space-between" }}
@@ -431,9 +385,7 @@ export default function App() {
                         : "bg-white text-slate-700 border-slate-200 hover:border-purple-500"
                     }`}
                   >
-                    
                     <span>{opt.label}</span>
-
                     {isSelected && (
                        <CheckCircle2 size={20} className="text-white" />
                     )}
@@ -540,7 +492,6 @@ export default function App() {
                   </p>
                 </div>
                 
-                {/* ENCART INSTA DM AFFICHÉ UNIQUEMENT SI STATUS === "complex" */}
                 <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-4 text-center">
                   <p className="text-sm text-blue-800 font-bold mb-3">
                     Envoie-moi ta photo pour une validation manuelle et personnelle !
@@ -550,7 +501,7 @@ export default function App() {
                     mais <strong>jamais face au soleil</strong> direct. Idéalement, une fenêtre côté
                     Nord (lumière naturelle indirecte) pour que les couleurs soient fidèles.
                   </p>
-                  <a
+                  
                     href={INSTAGRAM_DM_LINK}
                     target="_blank"
                     rel="noreferrer"
@@ -561,7 +512,6 @@ export default function App() {
                 </div>
               </>
             ) : (
-              // Affichage standard
               <>
                 <div className="text-center mb-6">
                   <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-bold mb-3">
@@ -577,7 +527,6 @@ export default function App() {
                   )}
                 </div>
                 <GuaranteeBadge />
-                {/* L'encart "Demander conseil" n'est plus affiché ici. */}
               </>
             )}
           </div>
@@ -593,9 +542,7 @@ export default function App() {
                     key={i}
                     className="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex gap-3 items-center animate-in slide-in-from-bottom-4"
                   >
-                    {/* Les emplacements d'icônes sont volontairement vides */}
                     <div className="text-2xl bg-slate-50 w-12 h-12 rounded-lg flex items-center justify-center border border-slate-100">
-                      {/* Note: p.img est vide dans la BDD Serverless */}
                     </div>
                     <div className="flex-1">
                       <h3 className="font-bold text-slate-800 text-sm">
@@ -608,7 +555,7 @@ export default function App() {
                         <span className="text-[10px] bg-purple-50 text-purple-700 px-2 py-1 rounded font-bold">
                           {p.category}
                         </span>
-                        <a
+                        
                           href={p.url}
                           target="_blank"
                           rel="noreferrer"
