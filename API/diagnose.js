@@ -1,9 +1,8 @@
-/* =========================================================
- * Algorithme Secret (Côté Serveur)
- * Ce code NE DOIT PAS être inclus dans votre bundle React
- * ========================================================= */
+// --- api/diagnose.js : Votre Logiciel Serveur Secret ---
 
-// --- BASE DE DONNÉES PRODUITS (Complète, nécessaire au calcul) ---
+// =========================================================
+// 1. BASE DE DONNÉES PRODUITS (Nécessaire au calcul)
+// =========================================================
 const SHOP_ROOT = "https://komigo.me/soniabonnefoy_vfvnvb/";
 const LINKS = {
   FOUNDATION_LIQUID:
@@ -54,7 +53,9 @@ const PRODUCTS_DB = [
 ];
 
 
-// --- FONCTIONS DE CALCUL DES TEINTES ---
+// =========================================================
+// 2. FONCTIONS DE CALCUL DES TEINTES (Le secret)
+// =========================================================
 
 const calculateShadeName = (tone, undertone) => {
     if (tone === "VeryFair") return undertone === "Froid" ? "Scarlet" : "Swan";
@@ -98,14 +99,7 @@ const calculateCreamCode = (tone, undertone) => {
     return `${number}${letter}`;
   };
 
-// --- FONCTION D'ANALYSE PRINCIPALE ---
-
-/**
- * Prend les réponses du quiz et retourne les recommandations complètes.
- * @param {object} answers Les réponses du quiz envoyées par le front-end.
- * @returns {object} Les résultats de l'analyse (teinte, statut, recommandations, etc.).
- */
-export const analyzeProfile = (answers) => {
+const analyzeProfile = (answers) => {
     let recs = [];
     let isComplex = false;
     let reason = "";
@@ -243,23 +237,50 @@ export const analyzeProfile = (answers) => {
 
 
     // 6. PRÉPARATION DU RÉSULTAT FINAL
-    const finalRecs = recs.filter(r => r); // Nettoyer les doublons/erreurs (même si la logique est faite pour éviter)
+    const finalRecs = recs.filter(r => r); 
 
     return {
       shadeCalculated: calculatedShade,
       statusCalculated: isComplex ? "complex" : "standard",
       alert: warning || reason,
-      // On retourne ici les objets produits complets
       recommendations: finalRecs, 
-      // Pour l'envoi à Make, on retourne les réponses brutes et le sous-ton calculé
+      // On retourne le sous-ton calculé pour l'envoi à Make (si nécessaire)
       analysisForMake: {
           undertoneCalculated: uTone,
-          skinCondition: answers.skinCondition,
       }
     };
 };
 
-/* * Ce code ci-dessus doit être appelé sur votre serveur.
- * Si vous utilisez un système comme Vercel ou Netlify, vous pouvez le mettre
- * dans un fichier API (ex: /api/diagnose.js) qui sera exposé via une URL unique.
+// =========================================================
+// 3. FONCTION SERVEUR PRINCIPALE (Endpoint Vercel)
+// =========================================================
+
+/**
+ * Fonction Serverless exécutée par Vercel.
+ * Elle reçoit les réponses du quiz et renvoie le diagnostic secret.
  */
+export default async function handler(req, res) {
+  // Sécurité: Accepter seulement les requêtes POST
+  if (req.method !== 'POST') {
+    return res.status(405).send('Method Not Allowed');
+  }
+
+  const { answers } = req.body; 
+
+  if (!answers) {
+    return res.status(400).json({ error: 'Missing quiz answers.' });
+  }
+
+  try {
+    // Exécution de l'algorithme SECRET
+    const result = analyzeProfile(answers); 
+
+    // Renvoyer les résultats au Front-end (App.js)
+    res.status(200).json(result); 
+
+  } catch (error) {
+    // Gérer les erreurs internes
+    console.error("Erreur dans la fonction diagnose.js:", error);
+    res.status(500).json({ error: 'Internal Server Error during diagnosis.' });
+  }
+}
