@@ -11,6 +11,7 @@ import {
   ShoppingBag,
   CheckSquare,
   ClipboardList,
+  ArrowLeft, // Importé pour le bouton retour
 } from "lucide-react";
 
 // --- 1. TES LIENS KOMIGO ---
@@ -57,6 +58,9 @@ const ALGORITHM_API_URL = "/api/diagnose";
 // Lien vers l'Instagram DM
 const INSTAGRAM_DM_LINK = "https://ig.me/m/ton_identifiant_instagram_ici"; 
 
+// Lien vers la politique de confidentialité
+const PRIVACY_POLICY_LINK = "/politique-confidentialite.html";
+
 // La base de données produits n'est plus ici, elle est dans api/diagnose.js
 const PRODUCTS_DB_PLACEHOLDER = []; 
 
@@ -67,6 +71,17 @@ const GradientBackground = ({ children }) => (
       {children}
     </div>
   </div>
+);
+
+// Composant de bouton de retour
+const BackButton = ({ onClick }) => (
+  <button
+    onClick={onClick}
+    className="absolute top-5 left-5 p-2 bg-white/50 backdrop-blur-md rounded-full text-slate-700 shadow-md hover:bg-white/80 transition-all z-20"
+    aria-label="Retour arrière"
+  >
+    <ArrowLeft size={20} />
+  </button>
 );
 
 // Mise à jour de la Garantie Love It
@@ -211,6 +226,24 @@ export default function App() {
     else setStep("capture");
   };
 
+  const handleBack = () => {
+    if (step === "quiz") {
+      if (qIdx > 0) {
+        setQIdx(qIdx - 1);
+      } else {
+        // Retour à la page de bienvenue
+        setStep("welcome");
+      }
+    } else if (step === "capture") {
+      setStep("quiz");
+      setQIdx(QUESTIONS.length - 1); // Revenir à la dernière question du quiz
+    } else if (step === "results") {
+      // Pour les résultats, on renvoie à la page de capture
+      setStep("capture");
+    }
+  };
+
+
   const sendDataToSonia = async (e) => {
     e.preventDefault();
     if (!userInfo.name || !userInfo.email) return;
@@ -224,7 +257,6 @@ export default function App() {
         const apiResponse = await fetch(ALGORITHM_API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            // On envoie simplement les réponses brutes
             body: JSON.stringify({ answers: quizAnswers }), 
         });
 
@@ -252,7 +284,6 @@ export default function App() {
 
 
     // --- 2. ENVOI VERS MAKE (WEBHOOK) ---
-    // On n'envoie les données à Make que si l'analyse a réussi (analysisResult est rempli)
     if (MAKE_WEBHOOK_URL && MAKE_WEBHOOK_URL.startsWith("http") && analysisResult) {
       try {
         const payload = {
@@ -268,7 +299,6 @@ export default function App() {
           preference: getLabel("preference", quizAnswers.preference),
           concern: getLabel("concern", quizAnswers.concern),
           
-          // Données VITALES reçues de l'API SECRÈTE
           shade: analysisResult.shadeCalculated, 
           status: analysisResult.statusCalculated,
           alert: analysisResult.alert,
@@ -296,8 +326,15 @@ export default function App() {
     }, 500);
   };
 
+  // Condition pour afficher le bouton retour
+  const showBackButton = (step === "quiz") || (step === "capture") || (step === "results" && status === "complex");
+
+
   return (
     <GradientBackground>
+
+      {showBackButton && <BackButton onClick={handleBack} />}
+
       {step === "welcome" && (
         <div className="h-full flex flex-col items-center justify-center p-6 text-center">
           <div className="w-20 h-20 bg-slate-900 rounded-full flex items-center justify-center mb-6 shadow-xl">
@@ -333,13 +370,25 @@ export default function App() {
             >
               Commencer <ArrowRight size={18} />
             </button>
+            
+            {/* Ajout du lien vers la politique de confidentialité */}
+            <div className="pt-4">
+              <a 
+                href={PRIVACY_POLICY_LINK} 
+                target="_blank" 
+                rel="noreferrer"
+                className="text-xs text-slate-500 hover:text-purple-600 underline transition-colors"
+              >
+                Politique de confidentialité
+              </a>
+            </div>
           </div>
         </div>
       )}
 
       {step === "quiz" && (
         <div className="h-full flex flex-col p-6 bg-white">
-          <div className="mb-6">
+          <div className="mb-6 mt-12"> {/* Marge ajoutée pour le bouton retour */}
             <div
               className="flex justify-between items-center text-xs font-bold text-slate-400 mb-2"
               style={{ display: "flex", justifyContent: "space-between" }}
@@ -490,17 +539,29 @@ export default function App() {
                     erreur, <strong>je dois valider ta teinte.</strong>
                   </p>
                 </div>
-                {/* Bouton pour ouvrir l'Instagram DM */}
-                <a
-                  href={INSTAGRAM_DM_LINK}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="w-full py-4 bg-amber-500 text-white rounded-xl font-bold text-lg shadow-lg shadow-amber-200 hover:bg-amber-600 transition-colors flex items-center justify-center gap-2 animate-pulse"
-                >
-                  <MessageCircle size={24} /> Me contacter par Instagram DM
-                </a>
+                
+                {/* ENCART INSTA DM AFFICHÉ UNIQUEMENT SI STATUS === "complex" */}
+                <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-4 text-center">
+                  <p className="text-sm text-blue-800 font-bold mb-3">
+                    Envoie-moi ta photo pour une validation manuelle et personnelle !
+                  </p>
+                  <p className="text-xs text-blue-700 mb-4 leading-relaxed bg-blue-100 p-2 rounded-lg">
+                    📸 <strong>Conseil Photo :</strong> Prends la photo <strong>face à une fenêtre</strong>,
+                    mais <strong>jamais face au soleil</strong> direct. Idéalement, une fenêtre côté
+                    Nord (lumière naturelle indirecte) pour que les couleurs soient fidèles.
+                  </p>
+                  <a
+                    href={INSTAGRAM_DM_LINK}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase hover:bg-blue-700 transition-colors"
+                  >
+                    <MessageCircle size={14} /> Demander conseil (Instagram DM)
+                  </a>
+                </div>
               </>
             ) : (
+              // Affichage standard
               <>
                 <div className="text-center mb-6">
                   <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-bold mb-3">
@@ -516,27 +577,7 @@ export default function App() {
                   )}
                 </div>
                 <GuaranteeBadge />
-                
-                {/* Nouveau bloc Demander conseil avec instructions photo */}
-                <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-4 text-center">
-                  <p className="text-sm text-blue-800 font-bold mb-3">
-                    Tu as un doute ? Envoie-moi ta photo pour une validation manuelle !
-                  </p>
-                  <p className="text-xs text-blue-700 mb-4 leading-relaxed bg-blue-100 p-2 rounded-lg">
-                    📸 <strong>Conseil Photo :</strong> Prends la photo <strong>face à une fenêtre</strong>,
-                    mais <strong>jamais face au soleil</strong> direct. Idéalement, une fenêtre côté
-                    Nord (lumière naturelle indirecte) pour que les couleurs soient fidèles.
-                  </p>
-                  {/* Lien vers l'Instagram DM */}
-                  <a
-                    href={INSTAGRAM_DM_LINK}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase hover:bg-blue-700 transition-colors"
-                  >
-                    <MessageCircle size={14} /> Demander conseil (Instagram DM)
-                  </a>
-                </div>
+                {/* L'encart "Demander conseil" n'est plus affiché ici. */}
               </>
             )}
           </div>
@@ -568,8 +609,7 @@ export default function App() {
                           {p.category}
                         </span>
                         <a
-                          // L'URL du produit vient maintenant de la recommandation reçue
-                          href={p.url} 
+                          href={p.url}
                           target="_blank"
                           rel="noreferrer"
                           className="text-[10px] bg-slate-900 text-white px-3 py-1.5 rounded-lg font-bold uppercase flex items-center gap-1 hover:bg-slate-700"
