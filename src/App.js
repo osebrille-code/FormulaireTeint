@@ -52,7 +52,7 @@ const MAKE_WEBHOOK_URL =
   "https://hook.eu1.make.com/on3dp8ol1rk0pymb8fo67mpewz98yg86";
 
 // Lien vers l'Instagram DM (Modifié selon la demande)
-const INSTAGRAM_DM_LINK = "https://ig.me/m/ton_identifiant_instagram_ici"; // REMPLACER PAR LE VRAI LIEN
+const INSTAGRAM_DM_LINK = "https://ig.me/m/sonia_bonnefoy"; // REMPLACER PAR LE VRAI LIEN
 
 // --- 3. BASE DE DONNÉES PRODUITS (Icônes supprimées) ---
 const PRODUCTS_DB = [
