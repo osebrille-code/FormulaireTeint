@@ -258,7 +258,7 @@ const QUESTIONS = [
     question: "État de peau (Plusieurs choix possibles)",
     multi: true,
     options: [
-      { label: "Mature (Rides/Fermeté)", value: "Mature" },
+      { label: "Relâchement (Rides/Fermeté)", value: "Mature" },
       { label: "Déshydratée (Manque d'eau)", value: "Déshydratée" },
       { label: "Imperfections (Boutons)", value: "Imperfections" },
       { label: "Rien de spécial", value: "Normale" },
@@ -851,7 +851,7 @@ export default function App() {
                   quizAnswers.skinCondition.includes("Mature") &&
                   recommendations.find((p) => p.id === "fdt_poudre") && (
                     <div className="bg-purple-50 p-3 rounded-xl border border-purple-100 mt-3 text-xs text-purple-800">
-                      💧 <strong>Conseil Peau Mature :</strong> Excellent choix
+                      💧 <strong>Conseil Peau à besoins spécifques :</strong> Excellent choix
                       ! Cette poudre est hydratante. Applique-la au
                       <strong>gros pinceau</strong>.
                     </div>
