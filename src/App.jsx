@@ -17,6 +17,22 @@ import {
 // --- 1. TES LIENS KOMIGO ---
 const SHOP_ROOT = "https://komigo.me/soniabonnefoy_vfvnvb/";
 
+// Fonctions pour générer les URLs dynamiques selon la teinte
+const getSerumFoundationUrl = (shade) => 
+  `https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-SerumFoundation-${shade}`;
+
+const getBBCreamUrl = (shade) => {
+  // Convertir "Fair Light" → "FairLight", "Light Medium" → "LightMedium"
+  const urlShade = shade.replace(/\s+/g, '');
+  return `https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-BBTinted-${urlShade}`;
+};
+
+const getCreamFoundationUrl = (shade) => 
+  `https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-CreamFoundation-${shade}_P`;
+
+const getPowderFoundationUrl = (shade) =>
+  `https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-PressedPowder-${shade}`;
+
 const LINKS = {
   FOUNDATION_LIQUID:
     "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-SerumFoundation-Alaari",
@@ -626,7 +642,24 @@ export default function App() {
     }
 
     recs.push(PRODUCTS_DB.find((p) => p.id === "base_illu"));
-    recs.push(PRODUCTS_DB.find((p) => p.id === finalProduct));
+    
+    // Ajouter le produit de teint avec l'URL dynamique selon la teinte
+    const foundationProduct = PRODUCTS_DB.find((p) => p.id === finalProduct);
+    if (foundationProduct) {
+      let dynamicUrl = foundationProduct.url;
+      
+      if (finalProduct === "fdt_mineral") {
+        dynamicUrl = getSerumFoundationUrl(calculatedShade);
+      } else if (finalProduct === "fdt_bb") {
+        dynamicUrl = getBBCreamUrl(calculatedShade);
+      } else if (finalProduct === "fdt_creme") {
+        dynamicUrl = getCreamFoundationUrl(calculatedShade);
+      } else if (finalProduct === "fdt_poudre") {
+        dynamicUrl = getPowderFoundationUrl(calculatedShade);
+      }
+      
+      recs.push({ ...foundationProduct, url: dynamicUrl });
+    }
 
     if (answers.concern === "Cernes") {
       recs.push(PRODUCTS_DB.find((p) => p.id === "concealer"));
