@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import {
   ShieldCheck,
   ArrowRight,
+  ArrowLeft,
   Sparkles,
   MessageCircle,
   Lock,
@@ -783,6 +784,21 @@ export default function App() {
 
       {step === "quiz" && (
         <div className="h-full flex flex-col p-6 bg-white overflow-y-auto">
+          {/* Bouton retour */}
+          <button
+            onClick={() => {
+              if (qIdx > 0) {
+                setQIdx(qIdx - 1);
+              } else {
+                setStep("welcome");
+              }
+            }}
+            className="w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center mb-4 transition-colors"
+            aria-label="Retour"
+          >
+            <ArrowLeft size={20} className="text-slate-600" />
+          </button>
+
           <div className="mb-6">
             <div
               className="flex justify-between items-center text-xs font-bold text-slate-400 mb-2"
@@ -872,7 +888,19 @@ export default function App() {
       )}
 
       {step === "capture" && (
-        <div className="h-full flex flex-col justify-center p-8 bg-white text-center">
+        <div className="h-full flex flex-col justify-center p-8 bg-white text-center relative">
+          {/* Bouton retour */}
+          <button
+            onClick={() => {
+              setQIdx(QUESTIONS.length - 1);
+              setStep("quiz");
+            }}
+            className="absolute top-6 left-6 w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center transition-colors"
+            aria-label="Retour"
+          >
+            <ArrowLeft size={20} className="text-slate-600" />
+          </button>
+
           <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 size={32} />
           </div>
