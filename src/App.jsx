@@ -204,11 +204,11 @@ const QUESTIONS = [
     question: "Ton teint naturel ?",
     image: "/Teints.png", // Image à placer dans le dossier public/
     options: [
-      { label: "Très Clair", value: "VeryFair" },
-      { label: "Clair", value: "Fair" },
-      { label: "Entre clair et foncé", value: "Medium" },
-      { label: "Foncé", value: "Dark" },
       { label: "Très Foncé", value: "Deep" },
+      { label: "Foncé", value: "Dark" },
+      { label: "Entre clair et foncé", value: "Medium" },
+      { label: "Clair", value: "Fair" },
+      { label: "Très Clair", value: "VeryFair" },
     ],
   },
   {
