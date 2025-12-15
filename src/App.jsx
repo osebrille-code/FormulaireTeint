@@ -48,7 +48,7 @@ const LINKS = {
 
 // --- 2. CONFIGURATION AUTOMATISATION ---
 const N8N_WEBHOOK_URL =
-  "https://n8n.srv1165443.hstgr.cloud/webhook-test/a5c67185-e091-4167-9158-3aded7cfd328";
+  "https://n8n.srv1165443.hstgr.cloud/webhook/a5c67185-e091-4167-9158-3aded7cfd328";
 
 const INSTAGRAM_DM_LINK = "https://ig.me/m/sonia_bonnefoy";
 
