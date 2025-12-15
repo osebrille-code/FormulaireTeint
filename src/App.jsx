@@ -287,9 +287,30 @@ const QUESTIONS = [
 const generateEmailHtml = (userInfo, answers, shade, status, alertReason, recommendations, getLabel) => {
   const isComplex = status === "complex";
   
+  // Ordre de priorité des catégories pour le tri
+  const categoryOrder = {
+    "Teint": 1,
+    "Base": 2,
+    "Finition": 3,
+    "Correction": 4,
+    "Soin Yeux": 5,
+    "Soin Profond": 6,
+    "Soin Tenseur": 7,
+    "Soin Eclat": 8,
+    "Soin": 9,
+  };
+
+  // Trier les produits selon l'ordre des catégories
+  const sortedRecommendations = [...recommendations]
+    .filter(p => p)
+    .sort((a, b) => {
+      const orderA = categoryOrder[a.category] || 99;
+      const orderB = categoryOrder[b.category] || 99;
+      return orderA - orderB;
+    });
+
   // Génération de la liste des produits en HTML
-  const productsHtml = recommendations
-    .filter(p => p) // Filtrer les produits null/undefined
+  const productsHtml = sortedRecommendations
     .map(p => `
       <tr>
         <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">
@@ -1039,7 +1060,25 @@ export default function App() {
                 Ta routine recommandée
               </p>
               <div className="space-y-3 opacity-90">
-                {recommendations.map((p, i) => (
+                {[...recommendations]
+                  .filter(p => p)
+                  .sort((a, b) => {
+                    const categoryOrder = {
+                      "Teint": 1,
+                      "Base": 2,
+                      "Finition": 3,
+                      "Correction": 4,
+                      "Soin Yeux": 5,
+                      "Soin Profond": 6,
+                      "Soin Tenseur": 7,
+                      "Soin Eclat": 8,
+                      "Soin": 9,
+                    };
+                    const orderA = categoryOrder[a.category] || 99;
+                    const orderB = categoryOrder[b.category] || 99;
+                    return orderA - orderB;
+                  })
+                  .map((p, i) => (
                   <div
                     key={i}
                     className="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex gap-3 items-center animate-in slide-in-from-bottom-4"
