@@ -47,9 +47,9 @@ const LINKS = {
 };
 
 // --- 2. CONFIGURATION AUTOMATISATION ---
-// C'est ici que tu colles l'adresse que Make va te donner
-const MAKE_WEBHOOK_URL =
-  "https://hook.eu1.make.com/on3dp8ol1rk0pymb8fo67mpewz98yg86";
+// C'est ici que tu colles l'adresse que N8N va te donner
+const N8N_WEBHOOK_URL =
+  "https://n8n.srv1165443.hstgr.cloud/webhook-test/a5c67185-e091-4167-9158-3aded7cfd328";
 
 // Lien vers l'Instagram DM (Modifié selon la demande)
 const INSTAGRAM_DM_LINK = "https://ig.me/m/sonia_bonnefoy"; // REMPLACER PAR LE VRAI LIEN
@@ -521,8 +521,8 @@ export default function App() {
     // On lance l'analyse et on récupère le résultat pour l'envoyer
     const analysisResult = analyzeProfile(quizAnswers);
 
-    // --- ENVOI VERS MAKE (WEBHOOK) ---
-    if (MAKE_WEBHOOK_URL && MAKE_WEBHOOK_URL.startsWith("http")) {
+    // --- ENVOI VERS N8N (WEBHOOK) ---
+    if (N8N_WEBHOOK_URL && N8N_WEBHOOK_URL.startsWith("http")) {
       try {
         const payload = {
           name: userInfo.name,
@@ -542,16 +542,16 @@ export default function App() {
           date: new Date().toISOString(),
         };
 
-        const response = await fetch(MAKE_WEBHOOK_URL, {
+        const response = await fetch(N8N_WEBHOOK_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
 
         if (response.ok) {
-          console.log("Envoyé à Make avec succès !");
+          console.log("Envoyé à N8N avec succès !");
         } else {
-          console.error("Erreur serveur Make");
+          console.error("Erreur serveur N8N");
         }
       } catch (err) {
         console.log("Erreur technique envoi", err);
