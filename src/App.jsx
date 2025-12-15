@@ -206,8 +206,8 @@ const QUESTIONS = [
     options: [
       { label: "Très Clair", value: "VeryFair" },
       { label: "Clair", value: "Fair" },
-      { label: "Moyen", value: "Medium" },
-      { label: "Mat / Foncé", value: "Dark" },
+      { label: "Entre clair et foncé", value: "Medium" },
+      { label: "Foncé", value: "Dark" },
       { label: "Très Foncé", value: "Deep" },
     ],
   },
