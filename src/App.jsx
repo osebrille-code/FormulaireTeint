@@ -575,7 +575,7 @@ export default function App() {
             Mon Diagnostic <span className="text-purple-600">Expert</span>
           </h1>
           <p className="text-slate-500 mb-8 max-w-xs mx-auto text-sm">
-            Trouve ta teinte exacte et ta routine idéale en 1 minute.
+            Trouve ta teinte exacte et les produits adaptés à ta peau.
           </p>
           <div className="w-full max-w-xs space-y-4">
             <div className="relative">
