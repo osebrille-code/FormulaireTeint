@@ -202,7 +202,7 @@ const QUESTIONS = [
   {
     id: "tone",
     question: "Ton teint naturel ?",
-    image: "/Teints.png", // Image à placer dans le dossier public/
+    image: "/Teints.png",
     options: [
       { label: "Très Foncé", value: "Deep" },
       { label: "Foncé", value: "Dark" },
@@ -281,6 +281,161 @@ const QUESTIONS = [
     ],
   },
 ];
+
+// --- 4. GÉNÉRATEUR HTML POUR EMAIL ---
+const generateEmailHtml = (userInfo, answers, shade, status, alertReason, recommendations, getLabel) => {
+  const isComplex = status === "complex";
+  
+  // Génération de la liste des produits en HTML
+  const productsHtml = recommendations
+    .filter(p => p) // Filtrer les produits null/undefined
+    .map(p => `
+      <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">
+          <strong style="color: #1e293b; font-size: 14px;">${p.name}</strong><br>
+          <span style="color: #64748b; font-size: 12px;">${p.desc}</span><br>
+          <span style="display: inline-block; background: #f3e8ff; color: #7c3aed; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-top: 4px;">${p.category}</span>
+        </td>
+        <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: right; vertical-align: middle;">
+          <a href="${p.url}" style="display: inline-block; background: #1e293b; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold;">Voir le produit</a>
+        </td>
+      </tr>
+    `).join('');
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ton Diagnostic Beauté Personnalisé</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f8fafc;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 20px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%); padding: 30px; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 800;">✨ Ton Diagnostic Beauté</h1>
+              <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 14px;">Personnalisé pour ${userInfo.name}</p>
+            </td>
+          </tr>
+
+          <!-- Profil Beauté -->
+          <tr>
+            <td style="padding: 24px;">
+              <table width="100%" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <tr>
+                  <td style="padding: 16px;">
+                    <h2 style="margin: 0 0 12px 0; font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">📋 Ton Profil</h2>
+                    <table width="100%" style="font-size: 13px; color: #334155;">
+                      <tr><td style="padding: 4px 0;"><strong>Teint :</strong> ${getLabel("tone", answers.tone)}</td></tr>
+                      <tr><td style="padding: 4px 0;"><strong>Sous-ton :</strong> Soleil ${getLabel("sun", answers.sun)} / Veines ${getLabel("veins", answers.veins)}</td></tr>
+                      <tr><td style="padding: 4px 0;"><strong>Type de peau :</strong> ${getLabel("skinType", answers.skinType)}</td></tr>
+                      <tr><td style="padding: 4px 0;"><strong>État :</strong> ${getLabel("skinCondition", answers.skinCondition)}</td></tr>
+                      <tr><td style="padding: 4px 0;"><strong>Texture préférée :</strong> ${getLabel("preference", answers.preference)}</td></tr>
+                      <tr><td style="padding: 4px 0;"><strong>Besoin prioritaire :</strong> ${getLabel("concern", answers.concern)}</td></tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          ${isComplex ? `
+          <!-- Alerte Profil Complexe -->
+          <tr>
+            <td style="padding: 0 24px 24px 24px;">
+              <table width="100%" style="background: #fef3c7; border-radius: 12px; border: 1px solid #fcd34d;">
+                <tr>
+                  <td style="padding: 16px;">
+                    <h2 style="margin: 0 0 8px 0; font-size: 16px; color: #92400e;">🔒 Analyse Personnalisée Requise</h2>
+                    <p style="margin: 0; font-size: 13px; color: #92400e; line-height: 1.5;">
+                      Ton profil est atypique (${alertReason}). Pour éviter une erreur de teinte, <strong>je dois valider personnellement ta recommandation.</strong>
+                    </p>
+                    <a href="${INSTAGRAM_DM_LINK}" style="display: inline-block; margin-top: 12px; background: #f59e0b; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">💬 Me contacter sur Instagram</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          ` : `
+          <!-- Teinte Validée -->
+          <tr>
+            <td style="padding: 0 24px;">
+              <table width="100%" style="text-align: center;">
+                <tr>
+                  <td>
+                    <span style="display: inline-block; background: #dcfce7; color: #166534; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: bold;">✅ Profil Validé</span>
+                    <h2 style="margin: 12px 0; font-size: 22px; color: #1e293b;">Ta Teinte : <span style="color: #7c3aed;">${shade}</span></h2>
+                    ${alertReason ? `<p style="background: #eff6ff; color: #1e40af; padding: 12px; border-radius: 8px; font-size: 12px; margin: 0 0 16px 0;">${alertReason}</p>` : ''}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Garantie -->
+          <tr>
+            <td style="padding: 16px 24px;">
+              <table width="100%" style="background: #f0fdf4; border-radius: 12px; border: 1px solid #bbf7d0;">
+                <tr>
+                  <td style="padding: 12px 16px;">
+                    <strong style="color: #166534; font-size: 11px; text-transform: uppercase;">🛡️ Garantie Love It Incluse</strong>
+                    <p style="margin: 4px 0 0 0; font-size: 12px; color: #15803d;">Satisfaite ou échangée. <strong>Même si le produit est ouvert.</strong></p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Liste des Produits -->
+          <tr>
+            <td style="padding: 0 24px 24px 24px;">
+              <h2 style="margin: 0 0 16px 0; font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; text-align: center;">🎁 Ta Routine Recommandée</h2>
+              <table width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+                ${productsHtml}
+              </table>
+            </td>
+          </tr>
+          `}
+
+          <!-- CTA Contact -->
+          <tr>
+            <td style="padding: 0 24px 24px 24px;">
+              <table width="100%" style="background: #eff6ff; border-radius: 12px; border: 1px solid #bfdbfe; text-align: center;">
+                <tr>
+                  <td style="padding: 20px;">
+                    <p style="margin: 0 0 8px 0; font-size: 14px; color: #1e40af; font-weight: bold;">Tu as un doute ? Une question ?</p>
+                    <p style="margin: 0 0 16px 0; font-size: 12px; color: #3b82f6;">Envoie-moi ta photo pour une validation personnalisée !</p>
+                    <a href="${INSTAGRAM_DM_LINK}" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 13px;">💬 Me contacter sur Instagram</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e2e8f0;">
+              <p style="margin: 0; font-size: 11px; color: #94a3b8;">
+                Ce diagnostic a été généré automatiquement.<br>
+                Pour toute question, contacte-moi sur Instagram : <a href="${INSTAGRAM_DM_LINK}" style="color: #7c3aed;">@sonia_bonnefoy</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `.trim();
+};
 
 export default function App() {
   const [step, setStep] = useState("welcome");
@@ -485,6 +640,7 @@ export default function App() {
       shadeCalculated: calculatedShade,
       statusCalculated: isComplex ? "complex" : "standard",
       reason: warning || reason,
+      recommendations: recs,
     };
   };
 
@@ -519,6 +675,27 @@ export default function App() {
 
     if (N8N_WEBHOOK_URL && N8N_WEBHOOK_URL.startsWith("http")) {
       try {
+        // Génération du HTML pour l'email
+        const emailHtml = generateEmailHtml(
+          userInfo,
+          quizAnswers,
+          analysisResult.shadeCalculated,
+          analysisResult.statusCalculated,
+          analysisResult.reason,
+          analysisResult.recommendations,
+          getLabel
+        );
+
+        // Liste simplifiée des produits pour le JSON
+        const productsList = analysisResult.recommendations
+          .filter(p => p)
+          .map(p => ({
+            name: p.name,
+            category: p.category,
+            description: p.desc,
+            url: p.url,
+          }));
+
         const payload = {
           name: userInfo.name,
           email: userInfo.email,
@@ -535,6 +712,10 @@ export default function App() {
           status: analysisResult.statusCalculated,
           alert: analysisResult.reason,
           date: new Date().toISOString(),
+          // Nouveaux champs pour l'email
+          products: productsList,
+          emailHtml: emailHtml,
+          emailSubject: `✨ ${userInfo.name}, voici ton diagnostic beauté personnalisé !`,
         };
 
         const response = await fetch(N8N_WEBHOOK_URL, {
@@ -632,7 +813,6 @@ export default function App() {
               </p>
             )}
 
-            {/* Container responsive : colonne sur mobile, ligne sur desktop */}
             <div
               className={`${
                 QUESTIONS[qIdx].image
@@ -640,7 +820,6 @@ export default function App() {
                   : ""
               }`}
             >
-              {/* Image (si présente) - En haut sur mobile, à droite sur desktop */}
               {QUESTIONS[qIdx].image && (
                 <div className="order-1 sm:order-2 flex-shrink-0 flex justify-center sm:justify-end w-full sm:w-auto mb-4 sm:mb-0">
                   <img
@@ -651,7 +830,6 @@ export default function App() {
                 </div>
               )}
 
-              {/* Options */}
               <div
                 className={`space-y-3 ${
                   QUESTIONS[qIdx].image ? "flex-1 order-2 sm:order-1" : ""
