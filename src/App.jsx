@@ -47,21 +47,19 @@ const LINKS = {
 };
 
 // --- 2. CONFIGURATION AUTOMATISATION ---
-// C'est ici que tu colles l'adresse que N8N va te donner
 const N8N_WEBHOOK_URL =
   "https://n8n.srv1165443.hstgr.cloud/webhook-test/a5c67185-e091-4167-9158-3aded7cfd328";
 
-// Lien vers l'Instagram DM (Modifié selon la demande)
-const INSTAGRAM_DM_LINK = "https://ig.me/m/sonia_bonnefoy"; // REMPLACER PAR LE VRAI LIEN
+const INSTAGRAM_DM_LINK = "https://ig.me/m/sonia_bonnefoy";
 
-// --- 3. BASE DE DONNÉES PRODUITS (Icônes supprimées) ---
+// --- 3. BASE DE DONNÉES PRODUITS ---
 const PRODUCTS_DB = [
   {
     id: "fdt_mineral",
     name: "FDT Sérum TOUCH (Liquide)",
     category: "Teint",
     desc: "Couvrance modulable, fini poudré.",
-    img: "", // icône supprimée
+    img: "",
     url: LINKS.FOUNDATION_LIQUID,
   },
   {
@@ -69,7 +67,7 @@ const PRODUCTS_DB = [
     name: "Crème Teintée BARE·YOU",
     category: "Teint",
     desc: 'Couvrance légère, fini "dewy".',
-    img: "", // icône supprimée
+    img: "",
     url: LINKS.FOUNDATION_BB,
   },
   {
@@ -77,7 +75,7 @@ const PRODUCTS_DB = [
     name: "FDT Poudre Compacte TOUCH",
     category: "Teint",
     desc: "Sans talc. Fini velours.",
-    img: "", // icône supprimée
+    img: "",
     url: LINKS.FOUNDATION_POWDER,
   },
   {
@@ -85,7 +83,7 @@ const PRODUCTS_DB = [
     name: "FDT Crème Compacte TOUCH",
     category: "Teint",
     desc: "Fini satiné, haute couvrance.",
-    img: "", // icône supprimée
+    img: "",
     url: LINKS.FOUNDATION_CREME,
   },
   {
@@ -93,7 +91,7 @@ const PRODUCTS_DB = [
     name: "Base Illuminatrice",
     category: "Base",
     desc: "Lumière & Hydratation.",
-    img: "", // icône supprimée
+    img: "",
     url: LINKS.BASE_ILLUMINATING,
   },
   {
@@ -101,7 +99,7 @@ const PRODUCTS_DB = [
     name: "Sérum YOUTHPLEXION",
     category: "Soin Profond",
     desc: "Booster collagène.",
-    img: "", // icône supprimée
+    img: "",
     url: LINKS.SKINCARE_YOUTH,
   },
   {
@@ -109,7 +107,7 @@ const PRODUCTS_DB = [
     name: "Sérum UPLIFT Beauty",
     category: "Soin Tenseur",
     desc: "Lisse et raffermit.",
-    img: "", // icône supprimée
+    img: "",
     url: LINKS.SKINCARE_UPLIFT,
   },
   {
@@ -117,7 +115,7 @@ const PRODUCTS_DB = [
     name: "Sérum GLOWPLEXION",
     category: "Soin Eclat",
     desc: "Cible les imperfections.",
-    img: "", // icône supprimée
+    img: "",
     url: LINKS.SKINCARE_GLOW,
   },
   {
@@ -125,7 +123,7 @@ const PRODUCTS_DB = [
     name: "Gel Rafraîchissant",
     category: "Soin",
     desc: "Hydratation légère.",
-    img: "", // icône supprimée
+    img: "",
     url: LINKS.SKINCARE_GEL,
   },
   {
@@ -133,7 +131,7 @@ const PRODUCTS_DB = [
     name: "Masque Détoxifiant",
     category: "Soin",
     desc: "Régule le sébum.",
-    img: "", // icône supprimée
+    img: "",
     url: LINKS.SKINCARE_MASK,
   },
   {
@@ -141,7 +139,7 @@ const PRODUCTS_DB = [
     name: "Contour des Yeux Youniversal",
     category: "Soin Yeux",
     desc: "Hydrate et lisse les cernes.",
-    img: "", // icône supprimée
+    img: "",
     url: LINKS.EYE_CREAM,
   },
   {
@@ -149,7 +147,7 @@ const PRODUCTS_DB = [
     name: "Patchs Contour des Yeux",
     category: "Soin Yeux",
     desc: "Hydrate & Décongestionne.",
-    img: "", // icône supprimée
+    img: "",
     url: LINKS.EYE_MASK,
   },
   {
@@ -157,7 +155,7 @@ const PRODUCTS_DB = [
     name: "Correcteur Skin Perfecting",
     category: "Correction",
     desc: "Camouflage cernes.",
-    img: "", // icône supprimée
+    img: "",
     url: LINKS.CONCEALER,
   },
   {
@@ -165,7 +163,7 @@ const PRODUCTS_DB = [
     name: "Poudre Prime & Set",
     category: "Finition",
     desc: "Eau encapsulée.",
-    img: "", // icône supprimée
+    img: "",
     url: LINKS.POWDER_PRIME_SET,
   },
   {
@@ -173,7 +171,7 @@ const PRODUCTS_DB = [
     name: "Brume Prime & Set",
     category: "Finition",
     desc: "Fixation extrême.",
-    img: "", // icône supprimée
+    img: "",
     url: LINKS.SPRAY,
   },
 ];
@@ -186,7 +184,6 @@ const GradientBackground = ({ children }) => (
   </div>
 );
 
-// Mise à jour de la Garantie Love It
 const GuaranteeBadge = () => (
   <div className="bg-green-50 border border-green-100 rounded-xl p-3 flex items-start gap-3 mb-4">
     <ShieldCheck className="text-green-600 flex-shrink-0" size={20} />
@@ -205,6 +202,7 @@ const QUESTIONS = [
   {
     id: "tone",
     question: "Ton teint naturel ?",
+    image: "/Teints.png", // Image à placer dans le dossier public/
     options: [
       { label: "Très Clair", value: "VeryFair" },
       { label: "Clair", value: "Fair" },
@@ -217,9 +215,9 @@ const QUESTIONS = [
     id: "sun",
     question: "L'été, ta peau...",
     options: [
-      { label: "Brûle direct", value: "Brûle" }, // Icône 🍅 supprimée
-      { label: "Brûle puis bronze", value: "Neutre" }, // Icône 🥕 supprimée
-      { label: "Bronze facilement", value: "Bronze" }, // Icône 🍪 supprimée
+      { label: "Brûle direct", value: "Brûle" },
+      { label: "Brûle puis bronze", value: "Neutre" },
+      { label: "Bronze facilement", value: "Bronze" },
       { label: "Je ne sais pas", value: "Inconnu" },
     ],
   },
@@ -242,7 +240,6 @@ const QUESTIONS = [
       { label: "Je ne sais pas", value: "Inconnu" },
     ],
   },
-
   {
     id: "skinType",
     question: "Ton type de peau ?",
@@ -518,10 +515,8 @@ export default function App() {
     if (!userInfo.name || !userInfo.email) return;
     setIsSending(true);
 
-    // On lance l'analyse et on récupère le résultat pour l'envoyer
     const analysisResult = analyzeProfile(quizAnswers);
 
-    // --- ENVOI VERS N8N (WEBHOOK) ---
     if (N8N_WEBHOOK_URL && N8N_WEBHOOK_URL.startsWith("http")) {
       try {
         const payload = {
@@ -606,7 +601,7 @@ export default function App() {
       )}
 
       {step === "quiz" && (
-        <div className="h-full flex flex-col p-6 bg-white">
+        <div className="h-full flex flex-col p-6 bg-white overflow-y-auto">
           <div className="mb-6">
             <div
               className="flex justify-between items-center text-xs font-bold text-slate-400 mb-2"
@@ -626,40 +621,66 @@ export default function App() {
               ></div>
             </div>
           </div>
+
           <div className="flex-1 flex flex-col justify-center">
             <h2 className="text-2xl font-black text-slate-800 mb-2">
               {QUESTIONS[qIdx].question}
             </h2>
             {QUESTIONS[qIdx].multi && (
-              <p className="text-sm text-purple-600 font-bold mb-6 flex items-center gap-1">
+              <p className="text-sm text-purple-600 font-bold mb-4 flex items-center gap-1">
                 <CheckSquare size={16} /> Plusieurs choix possibles
               </p>
             )}
-            <div className="space-y-3">
-              {QUESTIONS[qIdx].options.map((opt, i) => {
-                const isSelected = QUESTIONS[qIdx].multi
-                  ? (quizAnswers[QUESTIONS[qIdx].id] || []).includes(opt.value)
-                  : quizAnswers[QUESTIONS[qIdx].id] === opt.value;
-                return (
-                  <button
-                    key={i}
-                    onClick={() => handleQuizAnswer(opt.value)}
-                    className={`w-full text-left p-4 rounded-xl border transition-all font-bold shadow-sm flex justify-between items-center ${
-                      isSelected
-                        ? "bg-purple-600 text-white border-purple-600"
-                        : "bg-white text-slate-700 border-slate-200 hover:border-purple-500"
-                    }`}
-                  >
-                    
-                    <span>{opt.label}</span>
 
-                    {isSelected && (
-                       <CheckCircle2 size={20} className="text-white" />
-                    )}
-                  </button>
-                );
-              })}
+            {/* Container responsive : colonne sur mobile, ligne sur desktop */}
+            <div
+              className={`${
+                QUESTIONS[qIdx].image
+                  ? "flex flex-col sm:flex-row gap-4 items-start"
+                  : ""
+              }`}
+            >
+              {/* Image (si présente) - En haut sur mobile, à droite sur desktop */}
+              {QUESTIONS[qIdx].image && (
+                <div className="order-1 sm:order-2 flex-shrink-0 flex justify-center sm:justify-end w-full sm:w-auto mb-4 sm:mb-0">
+                  <img
+                    src={QUESTIONS[qIdx].image}
+                    alt="Guide teintes"
+                    className="w-28 sm:w-32 md:w-36 h-auto rounded-xl shadow-lg object-contain"
+                  />
+                </div>
+              )}
+
+              {/* Options */}
+              <div
+                className={`space-y-3 ${
+                  QUESTIONS[qIdx].image ? "flex-1 order-2 sm:order-1" : ""
+                }`}
+              >
+                {QUESTIONS[qIdx].options.map((opt, i) => {
+                  const isSelected = QUESTIONS[qIdx].multi
+                    ? (quizAnswers[QUESTIONS[qIdx].id] || []).includes(opt.value)
+                    : quizAnswers[QUESTIONS[qIdx].id] === opt.value;
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => handleQuizAnswer(opt.value)}
+                      className={`w-full text-left p-4 rounded-xl border transition-all font-bold shadow-sm flex justify-between items-center ${
+                        isSelected
+                          ? "bg-purple-600 text-white border-purple-600"
+                          : "bg-white text-slate-700 border-slate-200 hover:border-purple-500"
+                      }`}
+                    >
+                      <span>{opt.label}</span>
+                      {isSelected && (
+                        <CheckCircle2 size={20} className="text-white" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
+
             {QUESTIONS[qIdx].multi && (
               <button
                 onClick={handleNextQuestion}
@@ -758,7 +779,6 @@ export default function App() {
                     erreur, <strong>je dois valider ta teinte.</strong>
                   </p>
                 </div>
-                {/* Bouton pour ouvrir l'Instagram DM */}
                 <a
                   href={INSTAGRAM_DM_LINK}
                   target="_blank"
@@ -784,8 +804,7 @@ export default function App() {
                   )}
                 </div>
                 <GuaranteeBadge />
-                
-                {/* Nouveau bloc Demander conseil avec instructions photo */}
+
                 <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-4 text-center">
                   <p className="text-sm text-blue-800 font-bold mb-3">
                     Tu as un doute ? Envoie-moi ta photo pour une validation manuelle !
@@ -795,7 +814,6 @@ export default function App() {
                     mais <strong>jamais face au soleil</strong> direct. Idéalement, une fenêtre côté
                     Nord (lumière naturelle indirecte) pour que les couleurs soient fidèles.
                   </p>
-                  {/* Lien vers l'Instagram DM */}
                   <a
                     href={INSTAGRAM_DM_LINK}
                     target="_blank"
@@ -820,7 +838,6 @@ export default function App() {
                     key={i}
                     className="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex gap-3 items-center animate-in slide-in-from-bottom-4"
                   >
-                    {/* Les emplacements d'icônes sont volontairement vides */}
                     <div className="text-2xl bg-slate-50 w-12 h-12 rounded-lg flex items-center justify-center border border-slate-100">
                       {p.img}
                     </div>
