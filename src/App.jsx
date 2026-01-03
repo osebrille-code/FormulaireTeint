@@ -48,7 +48,7 @@ const LINKS = {
     "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-PrimeSetPowder",
   SPRAY: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-PrimeSetMist",
   SKINCARE_YOUTH:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-YouthplexionNightSerum",
+    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-YOUTHPLEXIONDayMoisturizer",
   SKINCARE_GLOW:
     "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-GlowplexionSerum",
   SKINCARE_UPLIFT:
