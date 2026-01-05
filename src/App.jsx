@@ -52,11 +52,11 @@ const LINKS = {
   SKINCARE_GLOW:
     "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-GlowplexionSerum",
   SKINCARE_UPLIFT:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-UpliftBeautyOil",
+    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-Uplift",
   SKINCARE_GEL:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-YouologyDayMoisturizer",
+    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-YOUTHPLEXIONDayMoisturizer",
   SKINCARE_MASK:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-RoyaltyDetoxMask",
+    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-ClayCharcoalMask",
   EYE_CREAM:
     "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-YouniversalEyeCream",
   EYE_MASK: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-EyeMask",
