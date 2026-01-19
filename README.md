@@ -1,2 +1,0 @@
-# FormulaireTeint
-Created with CodeSandbox
