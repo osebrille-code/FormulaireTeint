@@ -142,7 +142,7 @@ const PRODUCTS_DB = [
     name: "Crème de jour",
     category: "Soin",
     desc: "Hydratation renforcée.",
-    img: IMAGES.SKINCARE_YOUTH, // Même image que Youth selon demande
+    img: IMAGES.SKINCARE_YOUTH, // Fallback si pas d'image spécifique GEL
     url: LINKS.SKINCARE_GEL,
   },
   {
@@ -174,7 +174,7 @@ const PRODUCTS_DB = [
     name: "Correcteur Skin Perfecting",
     category: "Correction",
     desc: "Camouflage cernes.",
-    img: IMAGES.FOUNDATION_LIQUID, // Fallback visuel car pas d'image fournie
+    img: IMAGES.FOUNDATION_LIQUID, // Fallback visuel
     url: LINKS.CONCEALER,
   },
   {
@@ -326,6 +326,9 @@ const generateEmailHtml = (userInfo, answers, shade, status, alertReason, recomm
       return orderA - orderB;
     });
 
+  // Récupération du produit de teint pour l'affichage "Héros" dans le mail
+  const foundation = recommendations.find(p => p.category === "Teint");
+
   // HTML avec images
   const productsHtml = sortedRecommendations
     .map(p => `
@@ -404,15 +407,21 @@ const generateEmailHtml = (userInfo, answers, shade, status, alertReason, recomm
           ` : `
           <tr>
             <td style="padding: 0 24px;">
-              <table width="100%" style="text-align: center;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
                 <tr>
-                  <td>
-                    <span style="display: inline-block; background: #dcfce7; color: #166534; padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: bold;">✅ Profil Validé</span>
-                    <h2 style="margin: 12px 0; font-size: 22px; color: #1e293b;">Ta Teinte : <span style="color: #7c3aed;">${shade}</span></h2>
-                    ${alertReason ? `<p style="background: #eff6ff; color: #1e40af; padding: 12px; border-radius: 8px; font-size: 12px; margin: 0 0 16px 0;">${alertReason}</p>` : ''}
+                  <td width="100" style="padding: 16px; background: #f8fafc; border-right: 1px solid #e2e8f0; vertical-align: middle; text-align: center;">
+                    ${foundation ? `<img src="${foundation.img}" alt="Fond de teint" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; display: block; margin: 0 auto;">` : ''}
+                  </td>
+                  <td style="padding: 16px; vertical-align: middle;">
+                     <span style="display: inline-block; background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">✅ Profil Validé</span>
+                     <p style="margin: 0; font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold;">Ta teinte idéale</p>
+                     <h2 style="margin: 4px 0; font-size: 24px; color: #7c3aed; line-height: 1;">${shade}</h2>
+                     <p style="margin: 0 0 12px 0; font-size: 12px; color: #334155;">${foundation ? foundation.name : ''}</p>
+                     <a href="${foundation ? foundation.url : '#'}" style="display: inline-block; background: #1e293b; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold;">Commander ma teinte</a>
                   </td>
                 </tr>
               </table>
+              ${alertReason ? `<p style="background: #eff6ff; color: #1e40af; padding: 12px; border-radius: 8px; font-size: 12px; margin: 16px 0 0 0;">${alertReason}</p>` : ''}
             </td>
           </tr>
 
@@ -789,6 +798,8 @@ export default function App() {
     }, 1500);
   };
 
+  const foundationProduct = recommendations.find(p => p.category === "Teint");
+
   return (
     <GradientBackground>
       {step === "welcome" && (
@@ -1042,19 +1053,52 @@ export default function App() {
               </>
             ) : (
               <>
-                <div className="text-center mb-6">
-                  <div className="inline-flex items-center gap-2 bg-green-100 text-green-700 px-4 py-1 rounded-full text-sm font-bold mb-3">
-                    <CheckCircle2 size={16} /> Profil Validé
+                <div className="mb-6">
+                  {/* Carte Héros Produit + Teinte */}
+                  <div className="bg-white rounded-2xl p-4 shadow-lg shadow-purple-100 border border-purple-100 flex items-center gap-4 relative overflow-hidden">
+                    {/* Effet d'arrière-plan subtil */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-purple-50 rounded-full -mr-16 -mt-16 z-0"></div>
+                    
+                    {/* Image Produit */}
+                    <div className="w-24 h-24 flex-shrink-0 bg-slate-50 rounded-xl overflow-hidden border border-slate-100 relative z-10">
+                      <img
+                        src={foundationProduct?.img}
+                        alt={foundationProduct?.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+
+                    {/* Infos Teinte & Action */}
+                    <div className="flex-1 text-left relative z-10">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1">
+                          <CheckCircle2 size={10} /> Validé
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Ta teinte idéale</p>
+                      <h2 className="text-2xl font-black text-purple-600 leading-tight mb-1">{shadeName}</h2>
+                      <p className="text-xs text-slate-600 font-medium mb-3 line-clamp-1">{foundationProduct?.name}</p>
+                      
+                      <a
+                        href={foundationProduct?.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center justify-center w-full bg-slate-900 text-white text-xs font-bold py-2.5 rounded-lg gap-2 hover:bg-slate-800 transition-colors shadow-md"
+                      >
+                        <ShoppingBag size={12} /> Commander ma teinte
+                      </a>
+                    </div>
                   </div>
-                  <h2 className="text-xl font-black text-slate-800">
-                    Teinte : {shadeName}
-                  </h2>
+
+                  {/* Alerte éventuelle */}
                   {alertReason && (
-                    <div className="mt-3 bg-blue-50 text-blue-800 text-xs p-3 rounded-xl border border-blue-100 font-medium text-left">
-                      {alertReason}
+                    <div className="mt-3 bg-blue-50 text-blue-800 text-xs p-3 rounded-xl border border-blue-100 font-medium text-left flex gap-2">
+                      <span>ℹ️</span>
+                      <span>{alertReason}</span>
                     </div>
                   )}
                 </div>
+
                 <GuaranteeBadge />
 
                 <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-4 text-center">
