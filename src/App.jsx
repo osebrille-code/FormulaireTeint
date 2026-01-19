@@ -1,872 +1,1201 @@
 import React, { useState } from "react";
 import {
+  ShieldCheck,
   ArrowRight,
-  Activity,
-  Check,
-  Zap,
-  AlertTriangle,
   ArrowLeft,
+  Sparkles,
+  MessageCircle,
+  Lock,
+  User,
+  CheckCircle2,
+  Mail,
+  ShoppingBag,
+  CheckSquare,
+  ClipboardList,
 } from "lucide-react";
 
-// Nombre total d'étapes de questions (avant l'étape finale de diagnostic)
-const MAX_STEPS = 6;
+// --- 1. TES LIENS KOMIGO & IMAGES ---
+const SHOP_ROOT = "https://komigo.me/soniabonnefoy_vfvnvb/";
 
-// --- STRUCTURE GLOBALE DES RECOMMANDATIONS ---
+// URLs Images
+const IMAGES = {
+  FOUNDATION_LIQUID: "https://komigo.me/static/media/shop/products/CVKna3Wigz5QKoL68VMcg.webp?width=2000",
+  FOUNDATION_BB: "https://komigo.me/static/media/shop/products/CK1EPqyf4TCE9h1VZBEd8.webp?width=2000",
+  FOUNDATION_CREME: "https://komigo.me/static/media/shop/products/CK1ERADYbkbK8xZSwrMCd.webp?width=2000",
+  FOUNDATION_POWDER: "https://komigo.me/static/media/shop/products/CK1EZ3D643NWp6pqhHMfb.webp?width=2000",
+  BASE_ILLUMINATING: "https://komigo.me/static/media/shop/products/CK1EJvFFCtoeZHQNzweZa.webp?width=2000",
+  POWDER_PRIME_SET: "https://komigo.me/static/media/shop/products/CTToKgHqSGfCkWoSeq1mY.webp?width=2000",
+  SPRAY: "https://komigo.me/static/media/shop/products/CK1Ea91s9oF9m4Zh2adk1.webp?width=2000",
+  SKINCARE_YOUTH: "https://komigo.me/static/media/shop/products/CVG7kty25ZBt9yNCot2V8.webp?width=2000",
+  SKINCARE_GLOW: "https://komigo.me/static/media/shop/products/CVG9mR3zT53dEeKCDs5MA.webp?width=2000",
+  SKINCARE_UPLIFT: "https://komigo.me/static/media/shop/products/CX7moyn9MviZohXztz65x.webp?width=2000",
+  SKINCARE_MASK: "https://komigo.me/static/media/shop/products/CTTXZVXCmnQSjsXJxwMtY.webp?width=2000",
+  EYE_CREAM: "https://komigo.me/static/media/shop/products/CTTXbdzzjbqeZp6EsZAA7.webp?width=2000",
+  EYE_MASK: "https://komigo.me/static/media/shop/products/CQ9FDRqoVThp9eXsgW9ig.webp?width=2000",
+};
 
-const RECOMMENDATION_MAP = {
-  "Peau Grasse / Équilibre & Pureté": {
-    icon: "🌿",
-    protocol:
-      "Un protocole visant à réguler l'excès de sébum et à affiner le grain de peau.",
-    emailContent: `
-      <h3>Mes conseils Équilibre & Pureté :</h3>
-      
-      <strong>Nettoyant Matin et Soir :</strong> Parfait pour nettoyer sans décaper.<br>
-      <strong>Sérum Matin et Soir :</strong> Pour apporter des soins en profondeur et traiter la surproduction de sébum.<br>
-      <strong>Crème (Matin et Soir) :</strong> Hydrate sans graisser.<br>
-      <strong>Masque Argile Charbon :</strong> À faire 1x/semaine pour purifier.<br>
-    `,
-    cartLink: "https://komigo.me/soniabonnefoy_vfvnvb/CQKDHN",
+// Fonctions URLs dynamiques
+const getSerumFoundationUrl = (shade) => 
+  `https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-SerumFoundation-${shade}`;
+
+const getBBCreamUrl = (shade) => {
+  const urlShade = shade.replace(/\s+/g, '');
+  return `https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-BBTinted-${urlShade}`;
+};
+
+const getCreamFoundationUrl = (shade) => 
+  `https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-CreamFoundation-${shade}_P`;
+
+const getPowderFoundationUrl = (shade) =>
+  `https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-PressedPowder-${shade}`;
+
+const LINKS = {
+  FOUNDATION_LIQUID: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-SerumFoundation-Alaari",
+  FOUNDATION_BB: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-BBTinted-FairLight",
+  FOUNDATION_CREME: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-CreamFoundation-1C_P",
+  FOUNDATION_POWDER: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-PressedPowder-Cabretta",
+  BASE_ILLUMINATING: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-IlluminatingPrimer",
+  POWDER_PRIME_SET: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-PrimeSetPowder",
+  SPRAY: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-PrimeSetMist",
+  SKINCARE_YOUTH: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-YOUTHPLEXIONDayMoisturizer",
+  SKINCARE_GLOW: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-GlowplexionSerum",
+  SKINCARE_UPLIFT: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-HydratingSqualaneOil",
+  SKINCARE_GEL: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-YOUTHPLEXIONDayMoisturizer",
+  SKINCARE_MASK: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-ClayCharcoalMask",
+  EYE_CREAM: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-YouniversalEyeCream",
+  EYE_MASK: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-EyeMask",
+  CONCEALER: SHOP_ROOT,
+};
+
+// --- 2. CONFIGURATION AUTOMATISATION ---
+const N8N_WEBHOOK_URL = "https://n8n.srv1165443.hstgr.cloud/webhook/a5c67185-e091-4167-9158-3aded7cfd328";
+const INSTAGRAM_DM_LINK = "https://ig.me/m/sonia_bonnefoy";
+
+// --- 3. BASE DE DONNÉES PRODUITS ---
+const PRODUCTS_DB = [
+  {
+    id: "fdt_mineral",
+    name: "FDT Sérum TOUCH (Liquide)",
+    category: "Teint",
+    desc: "Couvrance modulable.",
+    img: IMAGES.FOUNDATION_LIQUID,
+    url: LINKS.FOUNDATION_LIQUID,
   },
-  "Cernes / Relance Circulatoire": {
-    icon: "👀",
-    protocol:
-      "Un duo ciblé pour décongestionner le contour des yeux et atténuer les cernes/poches.",
-    emailContent: `
-      <h3>Mon protocole Regard :</h3>
-      
-      <strong>Crème Contour des Yeux :</strong> À appliquer matin et soir.<br>
-      <strong>Patchs Contour des Yeux :</strong> À utiliser plusieurs fois par semaine pour décongestionner.<br>
-    `,
-    cartLink: "Relance circulatoire https://komigo.me/soniabonnefoy_vfvnvb/CQKHPP",
+  {
+    id: "fdt_bb",
+    name: "BB crème Teintée BARE·YOU",
+    category: "Teint",
+    desc: 'Couvrance légère, effet "seconde peau".',
+    img: IMAGES.FOUNDATION_BB,
+    url: LINKS.FOUNDATION_BB,
   },
-  "Structure & Vitalité / Fermeté & Rebond": {
-    icon: "✨",
-    protocol:
-      "Les produits sélectionnés pour relancer la production de collagène, redensifier la peau et améliorer sa fermeté.",
-    emailContent: `
-      <h3>Le protocole Structure & Vitalité :</h3>
-     
-      <strong>Nettoyant :</strong> Un nettoyant doux est essentiel pour préparer la peau à recevoir les actifs.<br>
-      <strong>Sérum :</strong> 
-      <p style="margin-top: 5px; margin-bottom: 15px; font-size: 0.95em;">
-      Ce sérum soutient le processus naturel de réparation et de renouvellement de votre peau pendant le sommeil. Formulé avec de l'extrait de prune verte (protection antioxydante) et de l'extrait de ciste du Maroc (renouvellement cellulaire), il offre une peau visiblement restaurée et revitalisée au réveil. A utiliser matin et soir.
+  {
+    id: "fdt_poudre",
+    name: "FDT Poudre Compacte TOUCH",
+    category: "Teint",
+    desc: "Sans talc. Fini velours.",
+    img: IMAGES.FOUNDATION_POWDER,
+    url: LINKS.FOUNDATION_POWDER,
+  },
+  {
+    id: "fdt_creme",
+    name: "FDT Crème Compacte TOUCH",
+    category: "Teint",
+    desc: "Fini satiné, couvrance modulable.",
+    img: IMAGES.FOUNDATION_CREME,
+    url: LINKS.FOUNDATION_CREME,
+  },
+  {
+    id: "base_illu",
+    name: "Base éclat",
+    category: "Base",
+    desc: "Lisse et améliore le rendu.",
+    img: IMAGES.BASE_ILLUMINATING,
+    url: LINKS.BASE_ILLUMINATING,
+  },
+  {
+    id: "youth",
+    name: "Sérum YOUTHPLEXION",
+    category: "Soin Profond",
+    desc: "Restaure et rajeunie.",
+    img: IMAGES.SKINCARE_YOUTH,
+    url: LINKS.SKINCARE_YOUTH,
+  },
+  {
+    id: "uplift",
+    name: "Sérum huile hydratante",
+    category: "Soin Tenseur",
+    desc: "Lisse et hydrate.",
+    img: IMAGES.SKINCARE_UPLIFT,
+    url: LINKS.SKINCARE_UPLIFT,
+  },
+  {
+    id: "glow",
+    name: "Sérum GLOWPLEXION",
+    category: "Soin Eclat",
+    desc: "Cible les imperfections.",
+    img: IMAGES.SKINCARE_GLOW,
+    url: LINKS.SKINCARE_GLOW,
+  },
+  {
+    id: "gel",
+    name: "Crème de jour",
+    category: "Soin",
+    desc: "Hydratation renforcée.",
+    img: IMAGES.SKINCARE_YOUTH, // Fallback si pas d'image spécifique GEL
+    url: LINKS.SKINCARE_GEL,
+  },
+  {
+    id: "detox",
+    name: "Masque Détoxifiant",
+    category: "Soin",
+    desc: "Régule le sébum.",
+    img: IMAGES.SKINCARE_MASK,
+    url: LINKS.SKINCARE_MASK,
+  },
+  {
+    id: "eye_cream",
+    name: "Contour des Yeux Youniversal",
+    category: "Soin Yeux",
+    desc: "Hydrate et lisse les cernes.",
+    img: IMAGES.EYE_CREAM,
+    url: LINKS.EYE_CREAM,
+  },
+  {
+    id: "eye_mask",
+    name: "Patchs Contour des Yeux",
+    category: "Soin Yeux",
+    desc: "Hydrate & Décongestionne.",
+    img: IMAGES.EYE_MASK,
+    url: LINKS.EYE_MASK,
+  },
+  {
+    id: "concealer",
+    name: "Correcteur Skin Perfecting",
+    category: "Correction",
+    desc: "Camouflage cernes.",
+    img: IMAGES.FOUNDATION_LIQUID, // Fallback visuel
+    url: LINKS.CONCEALER,
+  },
+  {
+    id: "powder_prime",
+    name: "Poudre BeHold",
+    category: "Finition",
+    desc: "Poudre hydratante & fixante.",
+    img: IMAGES.POWDER_PRIME_SET,
+    url: LINKS.POWDER_PRIME_SET,
+  },
+  {
+    id: "spray",
+    name: "Brume Prime & Set",
+    category: "Finition",
+    desc: "Brume hydratante & fixante.",
+    img: IMAGES.SPRAY,
+    url: LINKS.SPRAY,
+  },
+];
+
+const GradientBackground = ({ children }) => (
+  <div className="min-h-screen w-full bg-gradient-to-br from-rose-50 via-purple-50 to-indigo-50 p-4 flex flex-col items-center justify-center relative font-sans">
+    <div className="w-full max-w-md bg-white/95 backdrop-blur-xl rounded-[2rem] shadow-2xl overflow-hidden flex flex-col relative z-10 border border-white/60 min-h-[600px] max-h-[90vh]">
+      {children}
+    </div>
+  </div>
+);
+
+const GuaranteeBadge = () => (
+  <div className="bg-green-50 border border-green-100 rounded-xl p-3 flex items-start gap-3 mb-4">
+    <ShieldCheck className="text-green-600 flex-shrink-0" size={20} />
+    <div className="text-left">
+      <p className="text-[10px] font-black text-green-800 uppercase tracking-wide">
+        Garantie Love It Incluse
       </p>
-      <strong>Crème de Jour :</strong> Elle apporte confort, hydratation et protection contre les agressions extérieures.<br>
-      <strong>Crème de Nuit :</strong> Formulée pour soutenir le processus de renouvellement cellulaire nocturne et la production de collagène.<br>
-      
-      <h4>✨ Le geste "boost" pour la fermeté : Cure de Collagène Marin liquide et hydrolysé</h4>
-      
-      Suite à votre diagnostic, je vous recommande également d’ajouter une cure de collagène afin de soutenir la qualité de votre peau, ainsi que la fermeté et l’hydratation générale des tissus.<br><br>
-      
-      Cette cure contient :<br>
-      <strong>Collagène marin (5000 mg par stick) :</strong> c’est la protéine structurelle principale de la peau. Un apport extérieur peut aider à compenser la baisse naturelle de production.<br>
-      <strong>Vitamine C (30 mg) :</strong> elle contribue à la formation normale du collagène.<br>
-      <strong>Extrait d’acérola (250 mg) :</strong> source naturelle de vitamine C.<br>
-      <strong>Acide hyaluronique (120 mg) :</strong> molécule connue pour aider à maintenir l’hydratation de la peau.<br>
-      <strong>Aloe vera :</strong> utilisée pour ses propriétés apaisantes.<br><br>
-      
-      La prise est simple : 1 stick par jour. L’association collagène + vitamine C a pour but de soutenir la fermeté et l’élasticité de la peau.
-      
-      Si vous avez des questions ou si vous souhaitez que je vous accompagne dans la mise en place de votre routine, je suis disponible. Il vous suffira de répondre à ce mail.
-    `,
-    cartLink: "https://komigo.me/soniabonnefoy_vfvnvb/CQKDZY",
-  },
-  "Peau Sèche / Confort & Protection": {
-    icon: "💧",
-    protocol:
-      "Ton programme est conçu pour restaurer la barrière cutanée, hydrater en profondeur et retrouver du confort (Manque de lipides).",
-    emailContent: `
-      <h3>Mon programme Peau Sèche / Confort & Hydratation :</h3>
-      
-      <strong>Nettoyant (Matin et Soir) :</strong> Il ne va ni l’irriter ni l’agresser.<br>
-      <strong>Sérum au Concombre et à l’Aloès :</strong> Pour l’hydrater en profondeur.<br>
-      <strong>Crème de Jour et Crème de Nuit :</strong> Hydratation de surface optimale et protection de la barrière.<br>
-      <strong>Sérum huile de beauté UPLIFT :</strong> Complément de l'hydratation précédente (on lui a donné à boire), maintenant on va la nourrir avec ce sérum (lui donner à manger).<br>
-    `,
-    cartLink: "https://komigo.me/soniabonnefoy_vfvnvb/CPN3B4",
-  },
-  "Peau Mixte / Confort & Protection": {
-    icon: "🧭",
-    protocol:
-      "Ton programme est conçu pour gérer l'excess de sébum en zone T tout en nourrissant les zones sèches (Mixité/Déshydratation).",
-    emailContent: `
-      <h3>Mon programme Peau Mixte / Confort & Équilibre :</h3>
-      
-      <strong>Nettoyant Doux :</strong> Essentiel pour exfolier ta peau sans la décaper.<br>
-      <strong>Sérum avec vitamine C et de la figue de Barbarie :</strong> Hydratation non grasse pour tout le visage.<br>
-      <strong>Crème Équilibrante :</strong> Pour hydrater sans surcharger les zones grasses.<br>
-    `,
-    cartLink: "https://komigo.me/soniabonnefoy_vfvnvb/CQKJBK",
-  },
-  "Cortisol Face / Stress & SOS": {
-    icon: "🔥",
-    protocol:
-      "Un protocole anti-inflammatoire et apaisant pour traiter les imperfections liées au stress chronique et restaurer la barrière.",
-    emailContent: `
-      <h3>Protocole Anti-Stress (Cortisol Face) :</h3>
-      <p>Concentrez-vous sur des produits doux et apaisants. Votre priorité est de réduire l'inflammation et de restaurer la fonction barrière. Le sérum hydratant (à la figue de barbarie) et des masques régénérants de nuit sont essentiels.</p>
+      <p className="text-[11px] text-green-700 leading-tight">
+        Satisfaite ou échangée. <strong>Même si le produit est ouvert.</strong> Commandez sans risque.
+      </p>
+    </div>
+  </div>
+);
 
-      <h4>✨ Le geste "réparation" : Cure de Collagène Marin</h4>
-
-      Le stress chronique peut impacter la qualité de votre peau en réduisant la production de collagène. Je vous recommande d'ajouter une cure de collagène pour soutenir la réparation cutanée, l'hydratation et la résilience de vos tissus.<br><br>
-
-      Cette cure contient :<br>
-      <strong>Collagène marin (5000 mg par sachet) :</strong> pour renforcer la structure de la peau.<br>
-      <strong>Vitamine C (30 mg) :</strong> pour optimiser l'assimilation et la production naturelle de collagène.<br>
-      <strong>Extrait d’acérola (250 mg)</strong> et <strong>Acide hyaluronique (120 mg)</strong> pour l'hydratation et le confort.<br><br>
-    `,
-    cartLink: "https://komigo.me/soniabonnefoy_vfvnvb/CQKJS4",
+const QUESTIONS = [
+  {
+    id: "tone",
+    question: "Ton teint naturel ?",
+    image: "/Teints.png",
+    options: [
+      { label: "Très Foncé", value: "Deep" },
+      { label: "Foncé", value: "Dark" },
+      { label: "Entre clair et foncé", value: "Medium" },
+      { label: "Clair", value: "Fair" },
+      { label: "Très Clair", value: "VeryFair" },
+    ],
   },
-  "Carence / Beauté Intégrale": {
-    icon: "💊",
-    protocol:
-      "Un protocole de compléments alimentaires pour renforcer les ongles et les cheveux de l'intérieur.",
-    emailContent: `
-      <h3>Protocole Beauté Intégrale (Gummies Cheveux & Ongles) :</h3>
-      <p>Tes ongles et/ou tes cheveux montrent un manque de nutriments essentiels. Pour agir efficacement sur la casse et la pousse, je te recommande d'ajouter une cure de gummies fortifiants à ta routine.</p>
-      <p>Ces gummies contiennent des nutriments essentiels (Biotine, Zinc, Sélénium, Vitamines B) pour renforcer la fibre capillaire, réduire la casse et favoriser une pousse plus résistante.</p>
-      <strong>Cure de Gummies :</strong> 2 gummies par jour. Une cure de 3 mois est recommandée pour obtenir des résultats visibles et durables.<br>
-    `,
-    cartLink:
-      "https://komigo.me/soniabonnefoy_vfvnvb/CQKJ2C",
+  {
+    id: "sun",
+    question: "L'été, ta peau...",
+    options: [
+      { label: "Brûle direct", value: "Brûle" },
+      { label: "Brûle puis bronze", value: "Neutre" },
+      { label: "Bronze facilement", value: "Bronze" },
+      { label: "Je ne sais pas", value: "Inconnu" },
+    ],
   },
+  {
+    id: "jewelry",
+    question: "Tes bijoux ?",
+    options: [
+      { label: "L'Argent 🥈", value: "Argent" },
+      { label: "L'Or 🥇", value: "Or" },
+      { label: "Les deux / Je ne sais pas", value: "Inconnu" },
+    ],
+  },
+  {
+    id: "veins",
+    question: "Tes veines au poignet ?",
+    options: [
+      { label: "Bleues / Violettes", value: "Bleues" },
+      { label: "Vertes / Olives", value: "Vertes" },
+      { label: "À la fois Vertes & Bleues", value: "Mix" },
+      { label: "Je ne sais pas", value: "Inconnu" },
+    ],
+  },
+  {
+    id: "skinType",
+    question: "Ton type de peau ?",
+    options: [
+      { label: "Gras (Brillance)", value: "Grasse" },
+      { label: "Sec (Tiraillements)", value: "Sèche" },
+      { label: "Mixte (Zone T)", value: "Mixte" },
+      { label: "Je ne sais pas", value: "Mixte" },
+    ],
+  },
+  {
+    id: "skinCondition",
+    question: "État de peau (Plusieurs choix possibles)",
+    multi: true,
+    options: [
+      { label: "Relâchement (Rides/Fermeté)", value: "Mature" },
+      { label: "Déshydratée (Manque d'eau)", value: "Déshydratée" },
+      { label: "Imperfections (Boutons)", value: "Imperfections" },
+      { label: "Rien de spécial", value: "Normale" },
+    ],
+  },
+  {
+    id: "preference",
+    question: "Ta texture préférée ?",
+    options: [
+      { label: "BB Crème (Légère)", value: "BB" },
+      { label: "Fond de Teint Sérum (Fluide)", value: "Serum" },
+      { label: "Fond de Teint Poudre (Compact)", value: "Poudre" },
+      { label: "Fond de Teint Crème (Compact)", value: "Creme" },
+    ],
+  },
+  {
+    id: "concern",
+    question: "Ton besoin prioritaire ?",
+    options: [
+      { label: "Cacher mes cernes", value: "Cernes" },
+      { label: "Fixer mon maquillage", value: "Tenue" },
+      { label: "Flouter mes pores", value: "Pores" },
+    ],
+  },
+];
+
+// --- 4. GÉNÉRATEUR HTML POUR EMAIL ---
+const generateEmailHtml = (userInfo, answers, shade, status, alertReason, recommendations, getLabel) => {
+  const isComplex = status === "complex";
+  
+  // Ordre de priorité
+  const categoryOrder = {
+    "Teint": 1,
+    "Base": 2,
+    "Finition": 3,
+    "Correction": 4,
+    "Soin Yeux": 5,
+    "Soin Profond": 6,
+    "Soin Tenseur": 7,
+    "Soin Eclat": 8,
+    "Soin": 9,
+  };
+
+  const sortedRecommendations = [...recommendations]
+    .filter(p => p)
+    .sort((a, b) => {
+      const orderA = categoryOrder[a.category] || 99;
+      const orderB = categoryOrder[b.category] || 99;
+      return orderA - orderB;
+    });
+
+  // Récupération du produit de teint pour l'affichage "Héros" dans le mail
+  const foundation = recommendations.find(p => p.category === "Teint");
+
+  // HTML avec images
+  const productsHtml = sortedRecommendations
+    .map(p => `
+      <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; width: 60px; vertical-align: middle;">
+           <img src="${p.img}" alt="${p.name}" width="50" height="50" style="display: block; border-radius: 8px; object-fit: cover; border: 1px solid #f1f5f9;">
+        </td>
+        <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">
+          <strong style="color: #1e293b; font-size: 14px;">${p.name}</strong><br>
+          <span style="color: #64748b; font-size: 12px;">${p.desc}</span><br>
+          <span style="display: inline-block; background: #f3e8ff; color: #7c3aed; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-top: 4px;">${p.category}</span>
+        </td>
+        <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: right; vertical-align: middle;">
+          <a href="${p.url}" style="display: inline-block; background: #1e293b; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold;">Voir</a>
+        </td>
+      </tr>
+    `).join('');
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ton Diagnostic Beauté Personnalisé</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f8fafc;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f8fafc; padding: 20px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+          
+          <tr>
+            <td style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%); padding: 30px; text-align: center;">
+              <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 800;">✨ Ton Diagnostic Beauté</h1>
+              <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 14px;">Personnalisé pour ${userInfo.name}</p>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 24px;">
+              <table width="100%" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
+                <tr>
+                  <td style="padding: 16px;">
+                    <h2 style="margin: 0 0 12px 0; font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">📋 Ton Profil</h2>
+                    <table width="100%" style="font-size: 13px; color: #334155;">
+                      <tr><td style="padding: 4px 0;"><strong>Teint :</strong> ${getLabel("tone", answers.tone)}</td></tr>
+                      <tr><td style="padding: 4px 0;"><strong>Sous-ton :</strong> Soleil ${getLabel("sun", answers.sun)} / Veines ${getLabel("veins", answers.veins)}</td></tr>
+                      <tr><td style="padding: 4px 0;"><strong>Type de peau :</strong> ${getLabel("skinType", answers.skinType)}</td></tr>
+                      <tr><td style="padding: 4px 0;"><strong>État :</strong> ${getLabel("skinCondition", answers.skinCondition)}</td></tr>
+                      <tr><td style="padding: 4px 0;"><strong>Texture préférée :</strong> ${getLabel("preference", answers.preference)}</td></tr>
+                      <tr><td style="padding: 4px 0;"><strong>Besoin prioritaire :</strong> ${getLabel("concern", answers.concern)}</td></tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          ${isComplex ? `
+          <tr>
+            <td style="padding: 0 24px 24px 24px;">
+              <table width="100%" style="background: #fef3c7; border-radius: 12px; border: 1px solid #fcd34d;">
+                <tr>
+                  <td style="padding: 16px;">
+                    <h2 style="margin: 0 0 8px 0; font-size: 16px; color: #92400e;">🔒 Analyse Personnalisée Requise</h2>
+                    <p style="margin: 0; font-size: 13px; color: #92400e; line-height: 1.5;">
+                      Ton profil est atypique (${alertReason}). Pour éviter une erreur de teinte, <strong>je dois valider personnellement ta recommandation.</strong>
+                    </p>
+                    <a href="${INSTAGRAM_DM_LINK}" style="display: inline-block; margin-top: 12px; background: #f59e0b; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold;">💬 Me contacter sur Instagram</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          ` : `
+          <tr>
+            <td style="padding: 0 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="background: white; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                <tr>
+                  <td width="100" style="padding: 16px; background: #f8fafc; border-right: 1px solid #e2e8f0; vertical-align: middle; text-align: center;">
+                    ${foundation ? `<img src="${foundation.img}" alt="Fond de teint" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; display: block; margin: 0 auto;">` : ''}
+                  </td>
+                  <td style="padding: 16px; vertical-align: middle;">
+                     <span style="display: inline-block; background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: bold; text-transform: uppercase; margin-bottom: 4px;">✅ Profil Validé</span>
+                     <p style="margin: 0; font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: bold;">Ta teinte idéale</p>
+                     <h2 style="margin: 4px 0; font-size: 24px; color: #7c3aed; line-height: 1;">${shade}</h2>
+                     <p style="margin: 0 0 12px 0; font-size: 12px; color: #334155;">${foundation ? foundation.name : ''}</p>
+                     <a href="${foundation ? foundation.url : '#'}" style="display: inline-block; background: #1e293b; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: bold;">Commander ma teinte</a>
+                  </td>
+                </tr>
+              </table>
+              ${alertReason ? `<p style="background: #eff6ff; color: #1e40af; padding: 12px; border-radius: 8px; font-size: 12px; margin: 16px 0 0 0;">${alertReason}</p>` : ''}
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 16px 24px;">
+              <table width="100%" style="background: #f0fdf4; border-radius: 12px; border: 1px solid #bbf7d0;">
+                <tr>
+                  <td style="padding: 12px 16px;">
+                    <strong style="color: #166534; font-size: 11px; text-transform: uppercase;">🛡️ Garantie Love It Incluse</strong>
+                    <p style="margin: 4px 0 0 0; font-size: 12px; color: #15803d;">Satisfaite ou échangée. <strong>Même si le produit est ouvert.</strong></p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 0 24px 24px 24px;">
+              <h2 style="margin: 0 0 16px 0; font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; text-align: center;">🎁 Ta Routine Recommandée</h2>
+              <table width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+                ${productsHtml}
+              </table>
+            </td>
+          </tr>
+          `}
+
+          <tr>
+            <td style="padding: 0 24px 24px 24px;">
+              <table width="100%" style="background: #eff6ff; border-radius: 12px; border: 1px solid #bfdbfe; text-align: center;">
+                <tr>
+                  <td style="padding: 20px;">
+                    <p style="margin: 0 0 8px 0; font-size: 14px; color: #1e40af; font-weight: bold;">Tu as un doute ? Une question ?</p>
+                    <p style="margin: 0 0 16px 0; font-size: 12px; color: #3b82f6;">Envoie-moi ta photo pour une validation personnalisée !</p>
+                    <a href="${INSTAGRAM_DM_LINK}" style="display: inline-block; background: #3b82f6; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 13px;">💬 Me contacter sur Instagram</a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="background: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e2e8f0;">
+              <p style="margin: 0; font-size: 11px; color: #94a3b8;">
+                Ce diagnostic a été généré automatiquement.<br>
+                Pour toute question, contacte-moi sur Instagram : <a href="${INSTAGRAM_DM_LINK}" style="color: #7c3aed;">@sonia_bonnefoy</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `.trim();
 };
 
 export default function App() {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState("welcome");
+  const [userInfo, setUserInfo] = useState({ name: "", email: "" });
+  const [quizAnswers, setQuizAnswers] = useState({});
+  const [recommendations, setRecommendations] = useState([]);
+  const [status, setStatus] = useState("standard");
+  const [alertReason, setAlertReason] = useState("");
+  const [shadeName, setShadeName] = useState("");
+  const [qIdx, setQIdx] = useState(0);
+  const [isSending, setIsSending] = useState(false);
 
-  const [formData, setFormData] = useState({
-    gender: "Non spécifié",
-    skinSignals: [],
-    afterCleansing: "",
-    eyeConcerns: [],
-    ageRange: "",
-    currentRoutine: [],
-    nailsBreak: "N",
-    dullHair: "N",
-    topPriority: "",
-    identity: { nom: "", prenom: "", email: "" },
-  });
+  const getLabel = (questionId, value) => {
+    const q = QUESTIONS.find((q) => q.id === questionId);
+    if (!q) return value;
+    if (Array.isArray(value))
+      return value
+        .map((v) => q.options.find((o) => o.value === v)?.label || v)
+        .join(", ");
+    return q.options.find((o) => o.value === value)?.label || value;
+  };
 
-  const skinOptions = [
-    "Ma peau brille",
-    "Ma peau tire",
-    "Pores apparents",
-    "Rides, ridules",
-    "S'affaisse / se relâche",
-    "Imperfections",
-  ];
-  const cleansingOptions = [
-    { value: "A", text: "Ma peau ne me gêne pas, elle est normale." },
-    { value: "B", text: "Ma peau tiraille énormément et est rugueuse." },
-    {
-      value: "C",
-      text: "Ma peau tiraille un peu, mais redevient grasse au bout de 2h.",
-    },
-    {
-      value: "D",
-      text: "Ma peau est plus douce, mais brille rapidement après.",
-    },
-  ];
+  const calculateShadeName = (tone, undertone) => {
+    if (tone === "VeryFair") return undertone === "Froid" ? "Scarlet" : "Swan";
+    if (tone === "Fair")
+      return undertone === "Froid"
+        ? "Organza"
+        : undertone === "Chaud"
+        ? "Lace"
+        : "Velour";
+    if (tone === "Medium")
+      return undertone === "Froid"
+        ? "Chiffon"
+        : undertone === "Chaud"
+        ? "Satin"
+        : "Eyelet";
+    if (tone === "Dark")
+      return undertone === "Froid"
+        ? "Alaari"
+        : undertone === "Chaud"
+        ? "Velvet"
+        : "Charmeuse";
+    if (tone === "Deep")
+      return undertone === "Froid"
+        ? "Azlon"
+        : undertone === "Chaud"
+        ? "Sanyan"
+        : "Suede";
+    return "Taffeta";
+  };
 
-  const eyeOptions = [
-    "Contour des yeux sec",
-    "Contour des yeux marqué",
-    "Poches sous les yeux",
-    "Cernes marrons",
-  ];
+  const calculateCreamCode = (tone, undertone) => {
+    let letter = "N";
+    if (undertone === "Froid") letter = "C";
+    if (undertone === "Chaud") letter = "W";
+    let number = "2";
+    if (tone === "VeryFair") number = "1";
+    if (tone === "Fair") number = "2";
+    if (tone === "Medium") number = "4";
+    if (tone === "Dark") number = "7";
+    if (tone === "Deep") number = "9";
+    return `${number}${letter}`;
+  };
 
-  const ageOptions = ["15/25 ans", "25/35 ans", "35/45 ans", "45 ans et plus"];
+  const analyzeProfile = (answers) => {
+    let recs = [];
+    let isComplex = false;
+    let reason = "";
+    let warning = "";
 
-  const routineOptions = [
-    "Masque",
-    "Crème contour des yeux",
-    "Sérum",
-    "Crème jour",
-    "Crème nuit",
-    "Exfoliant",
-    "Collagène",
-  ];
-  const yesNoOptions = [
-    { label: "Oui", value: "O" },
-    { label: "Non", value: "N" },
-  ];
+    // SOUS-TON
+    const votes = { Chaud: 0, Froid: 0, Neutre: 0 };
+    if (answers.sun && answers.sun !== "Inconnu")
+      votes[
+        answers.sun === "Brûle"
+          ? "Froid"
+          : answers.sun === "Bronze"
+          ? "Chaud"
+          : "Neutre"
+      ]++;
+    if (answers.jewelry && answers.jewelry !== "Inconnu")
+      votes[
+        answers.jewelry === "Argent"
+          ? "Froid"
+          : answers.jewelry === "Or"
+          ? "Chaud"
+          : "Neutre"
+      ]++;
+    if (answers.veins === "Bleues") votes.Froid++;
+    else if (answers.veins === "Vertes") votes.Chaud++;
+    else if (answers.veins === "Mix") votes.Neutre++;
 
-  const handleMultiSelect = (category, value) => {
-    setFormData((prev) => {
-      const list = prev[category];
-      if (list.includes(value)) {
-        return {
-          ...prev,
-          [category]: list.filter((item) => item !== value),
-        };
+    let uTone = "Neutre";
+    if (votes.Chaud > votes.Froid && votes.Chaud > votes.Neutre)
+      uTone = "Chaud";
+    else if (votes.Froid > votes.Chaud && votes.Froid > votes.Neutre)
+      uTone = "Froid";
+    else uTone = "Neutre";
+
+    let calculatedShade = "";
+    if (answers.preference === "Creme") {
+      calculatedShade = calculateCreamCode(answers.tone, uTone);
+    } else if (answers.preference === "BB") {
+      if (answers.tone === "VeryFair") calculatedShade = "Fair Light";
+      else if (answers.tone === "Fair") calculatedShade = "Light";
+      else if (answers.tone === "Medium") calculatedShade = "Light Medium";
+      else calculatedShade = "Medium";
+    } else {
+      calculatedShade = calculateShadeName(answers.tone, uTone);
+    }
+
+    // LOGIQUE PRODUITS
+    let finalProduct = "";
+    const isRiskOrange = [
+      "Taffeta",
+      "Satin",
+      "Velvet",
+      "Cypress",
+      "Charmeuse",
+    ].includes(calculatedShade);
+
+    if (answers.preference === "Poudre") {
+      if (isRiskOrange) {
+        finalProduct = "fdt_mineral";
+        warning = `⚠️ Je t'ai orientée vers le Sérum car la Poudre ressort trop orangée sur les teintes ${calculatedShade}.`;
+      } else if (calculatedShade === "Eyelet") {
+        finalProduct = "fdt_poudre";
+        calculatedShade = "Chiffon";
+        warning = "ℹ️ Correspondance Poudre : Chiffon.";
+      } else if (calculatedShade === "Jacquard") {
+        finalProduct = "fdt_poudre";
+        calculatedShade = "Linen";
+        warning = "ℹ️ Correspondance Poudre : Linen.";
       } else {
-        return { ...prev, [category]: [...list, value] };
+        finalProduct = "fdt_poudre";
       }
-    });
-  };
+    } else if (answers.preference === "BB") {
+      finalProduct = "fdt_bb";
+    } else if (answers.preference === "Creme") {
+      finalProduct = "fdt_creme";
+    } else {
+      finalProduct = "fdt_mineral";
+    }
 
-  const nextStep = () => setStep((prev) => prev + 1);
-  const prevStep = () => setStep((prev) => Math.max(0, prev - 1));
+    setShadeName(calculatedShade);
+    setAlertReason(warning);
 
-  // --- 5. LOGIQUE DE MULTI-DIAGNOSTIC AVEC ÂGE ET COMPORTEMENT ---
-
-  const getApplicableDiagnoses = () => {
-    const skin = formData.skinSignals;
-    const eye = formData.eyeConcerns;
-    const age = formData.ageRange;
-    const cleansing = formData.afterCleansing;
-    const nailsBreak = formData.nailsBreak;
-    const dullHair = formData.dullHair;
-    const diagnoses = [];
-
-    const isMatureAge = age === "35/45 ans" || age === "45 ans et plus";
-    const isAdultAcneAge = age === "25/35 ans" || isMatureAge;
-
-    // --- 1. STRUCTURE & VITALITÉ
-    const hasWrinkles = skin.includes("Rides, ridules");
-    const hasSagging = skin.includes("S'affaisse / se relâche");
-    if (
-      (isMatureAge && (hasWrinkles || hasSagging)) ||
-      (!isMatureAge && hasWrinkles && hasSagging)
+    // SOINS
+    const conditions = Array.isArray(answers.skinCondition)
+      ? answers.skinCondition
+      : [answers.skinCondition];
+    if (conditions.includes("Mature")) {
+      recs.push(PRODUCTS_DB.find((p) => p.id === "uplift"));
+      recs.push(PRODUCTS_DB.find((p) => p.id === "youth"));
+    } else if (
+      conditions.includes("Imperfections") ||
+      answers.skinType === "Grasse"
     ) {
-      diagnoses.push("Structure & Vitalité / Fermeté & Rebond");
+      recs.push(PRODUCTS_DB.find((p) => p.id === "glow"));
+      if (answers.skinType === "Grasse")
+        recs.push(PRODUCTS_DB.find((p) => p.id === "detox"));
+    } else if (conditions.includes("Déshydratée")) {
+      recs.push(PRODUCTS_DB.find((p) => p.id === "youth"));
+    } else {
+      recs.push(PRODUCTS_DB.find((p) => p.id === "gel"));
     }
 
-    // --- 2. PEAU SÈCHE
+    recs.push(PRODUCTS_DB.find((p) => p.id === "base_illu"));
+    
+    // Ajouter le produit de teint avec l'URL dynamique selon la teinte
+    const foundationProduct = PRODUCTS_DB.find((p) => p.id === finalProduct);
+    if (foundationProduct) {
+      let dynamicUrl = foundationProduct.url;
+      
+      if (finalProduct === "fdt_mineral") {
+        dynamicUrl = getSerumFoundationUrl(calculatedShade);
+      } else if (finalProduct === "fdt_bb") {
+        dynamicUrl = getBBCreamUrl(calculatedShade);
+      } else if (finalProduct === "fdt_creme") {
+        dynamicUrl = getCreamFoundationUrl(calculatedShade);
+      } else if (finalProduct === "fdt_poudre") {
+        dynamicUrl = getPowderFoundationUrl(calculatedShade);
+      }
+      
+      recs.push({ ...foundationProduct, url: dynamicUrl });
+    }
+
+    if (answers.concern === "Cernes") {
+      recs.push(PRODUCTS_DB.find((p) => p.id === "concealer"));
+      recs.push(PRODUCTS_DB.find((p) => p.id === "eye_cream"));
+      recs.push(PRODUCTS_DB.find((p) => p.id === "eye_mask"));
+    }
     if (
-      cleansing === "B" ||
-      (skin.includes("Ma peau tire") &&
-        eye.includes("Contour des yeux sec") &&
-        cleansing !== "C" &&
-        cleansing !== "D")
-    ) {
-      diagnoses.push("Peau Sèche / Confort & Protection");
+      answers.skinType === "Grasse" ||
+      answers.concern === "Pores" ||
+      answers.concern === "Tenue"
+    )
+      recs.push(PRODUCTS_DB.find((p) => p.id === "powder_prime"));
+    if (answers.concern === "Tenue" && answers.skinType === "Sèche")
+      recs.push(PRODUCTS_DB.find((p) => p.id === "spray"));
+
+    if (answers.tone === "Deep" && answers.sun === "Brûle") {
+      isComplex = true;
+      reason = "Incohérence Teint/Soleil.";
+    }
+    const unknownCount = Object.values(answers).filter(
+      (v) => v === "Inconnu"
+    ).length;
+    if (unknownCount >= 2) {
+      isComplex = true;
+      reason = "Trop d'incertitudes.";
     }
 
-    // --- 3. PEAU GRASSE
-    if (
-      (skin.includes("Ma peau brille") && skin.includes("Pores apparents")) ||
-      cleansing === "D"
-    ) {
-      diagnoses.push("Peau Grasse / Équilibre & Pureté");
-    }
+    setStatus(isComplex ? "complex" : "standard");
+    if (isComplex) setAlertReason(reason);
+    setRecommendations(recs);
 
-    // --- 4. PEAU MIXTE
-    if (
-      (skin.includes("Ma peau brille") && skin.includes("Ma peau tire")) ||
-      cleansing === "C"
-    ) {
-      diagnoses.push("Peau Mixte / Confort & Protection");
-    }
-
-    // --- 5. CERNES
-    if (
-      eye.includes("Poches sous les yeux") ||
-      eye.includes("Cernes marrons") ||
-      eye.includes("Contour des yeux marqué")
-    ) {
-      diagnoses.push("Cernes / Relance Circulatoire");
-    }
-
-    // --- 6. CORTISOL FACE
-    const isStressedSkin =
-      skin.includes("Ma peau tire") || eye.includes("Contour des yeux marqué");
-    if (skin.includes("Imperfections") && isStressedSkin && isAdultAcneAge) {
-      diagnoses.push("Cortisol Face / Stress & SOS");
-    }
-
-    // --- 7. CARENCE (Ongles/Cheveux)
-    if (nailsBreak === "O" || dullHair === "O") {
-      diagnoses.push("Carence / Beauté Intégrale");
-    }
-
-    const finalDiagnoses = [...new Set(diagnoses)];
-    if (finalDiagnoses.includes("Peau Grasse / Équilibre & Pureté")) {
-      return finalDiagnoses.filter(
-        (d) => d !== "Peau Sèche / Confort & Protection"
-      );
-    }
-
-    return finalDiagnoses;
-  };
-
-  const applicableDiagnoses = getApplicableDiagnoses();
-
-  // --- 6. ENVOI VERS N8N (Webhooks) ---
-
-  const sendToN8N = async () => {
-    if (!formData.identity.email || !formData.identity.prenom) {
-      alert(
-        "Merci de remplir ton prénom et email pour recevoir mes préconisations !"
-      );
-      return;
-    }
-
-    const recommendationDetails = applicableDiagnoses.map((diag) => {
-      const reco = RECOMMENDATION_MAP[diag];
-      return {
-        title: diag.split(" / ")[0],
-        cartLink: reco ? reco.cartLink : "#",
-        emailContent: reco
-          ? reco.emailContent
-          : `<p>Protocole non défini pour ${diag.split(" / ")[0]}</p>`,
-      };
-    });
-
-    let finalEmailContent = `
-        <p>Hello ${formData.identity.prenom} !</p>
-        <p>Suite à ton diagnostic, ta peau présente ${
-          applicableDiagnoses.length
-        } besoin(s) simultané(s). Voici ton protocole complet, divisé par problématique, pour une routine sur mesure.</p>
-        <div style="margin-top: 20px; margin-bottom: 20px; border-top: 1px solid #ddd;"></div>
-    `;
-
-    recommendationDetails.forEach((detail, index) => {
-      finalEmailContent += detail.emailContent;
-      finalEmailContent += `
-            <p style="margin-top: 15px; margin-bottom: 25px;">
-                <a href="${
-                  detail.cartLink
-                }" style="padding: 10px 20px; background-color: #5B21B6; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;">
-                    Accéder au panier ${detail.title}
-                </a>
-            </p>
-            ${
-              index < recommendationDetails.length - 1
-                ? '<div style="margin-top: 20px; margin-bottom: 20px; border-top: 1px solid #eee;"></div>'
-                : ""
-            }
-        `;
-    });
-    finalEmailContent += `<p>Si tu as des questions, n'hésite pas à écrire en réponse à ce mail !</p><p>Xoxo. Sonia</p>`;
-
-    const dataToSend = {
-      date: new Date().toLocaleDateString("fr-FR"),
-      prenom: formData.identity.prenom,
-      nom: formData.identity.nom,
-      email: formData.identity.email,
-      genre: formData.gender,
-      age: formData.ageRange,
-      problemes_peau: formData.skinSignals.join(", "),
-      comportement_nettoyage: formData.afterCleansing,
-      problemes_yeux: formData.eyeConcerns.join(", "),
-      routine_actuelle: formData.currentRoutine.join(", "),
-      ongles_cassants: formData.nailsBreak,
-      cheveux_ternes: formData.dullHair,
-      priorite_absolue: formData.topPriority,
-      diagnostics_trouves: applicableDiagnoses.join(", "),
-      contenu_email_final: finalEmailContent,
-      details_recommandations_json: JSON.stringify(recommendationDetails),
+    return {
+      shadeCalculated: calculatedShade,
+      statusCalculated: isComplex ? "complex" : "standard",
+      reason: warning || reason,
+      recommendations: recs,
     };
+  };
 
-    console.log("Envoi JSON vers N8N...", dataToSend);
-
-    const WEBHOOK_URL =
-      "https://n8n.srv1165443.hstgr.cloud/webhook/91319412-213b-4d2a-b6fd-626cc421c51b";
-    try {
-      await fetch(WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dataToSend),
-      });
-
-      // Attention : import.meta.env est spécifique à Vite. Si tu utilises Create React App, utilise process.env.REACT_APP_WHATSAPP_NUMBER
-      const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER;
-      const messageWhatsApp = `👋 Bonjour Sonia ! Voici mon Diagnostic Soin. Mes besoins principaux sont : ${applicableDiagnoses.join(
-        ", "
-      )}. Peux-tu préparer mon protocole complet ?`;
-
-      if (WHATSAPP_NUMBER) {
-        window.open(
-          `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-            messageWhatsApp
-          )}`,
-          "_blank"
-        );
-      } else {
-        alert("Diagnostic envoyé. Merci !");
-      }
-    } catch (error) {
-      console.error("Erreur d'envoi", error);
-      alert("Une erreur est survenue lors de l'envoi du diagnostic.");
+  const handleQuizAnswer = (val) => {
+    const currentQ = QUESTIONS[qIdx];
+    if (currentQ.multi) {
+      const currentVals = quizAnswers[currentQ.id] || [];
+      let newVals;
+      if (currentVals.includes(val))
+        newVals = currentVals.filter((v) => v !== val);
+      else newVals = [...currentVals, val];
+      setQuizAnswers({ ...quizAnswers, [currentQ.id]: newVals });
+    } else {
+      const newAns = { ...quizAnswers, [currentQ.id]: val };
+      setQuizAnswers(newAns);
+      if (qIdx < QUESTIONS.length - 1) setQIdx(qIdx + 1);
+      else setStep("capture");
     }
   };
 
-  const progress = Math.min(100, Math.floor((step / MAX_STEPS) * 100));
+  const handleNextQuestion = () => {
+    if (qIdx < QUESTIONS.length - 1) setQIdx(qIdx + 1);
+    else setStep("capture");
+  };
+
+  const sendDataToSonia = async (e) => {
+    e.preventDefault();
+    if (!userInfo.name || !userInfo.email) return;
+    setIsSending(true);
+
+    const analysisResult = analyzeProfile(quizAnswers);
+
+    if (N8N_WEBHOOK_URL && N8N_WEBHOOK_URL.startsWith("http")) {
+      try {
+        const emailHtml = generateEmailHtml(
+          userInfo,
+          quizAnswers,
+          analysisResult.shadeCalculated,
+          analysisResult.statusCalculated,
+          analysisResult.reason,
+          analysisResult.recommendations,
+          getLabel
+        );
+
+        const productsList = analysisResult.recommendations
+          .filter(p => p)
+          .map(p => ({
+            name: p.name,
+            category: p.category,
+            description: p.desc,
+            url: p.url,
+            img: p.img,
+          }));
+
+        const payload = {
+          name: userInfo.name,
+          email: userInfo.email,
+          tone: getLabel("tone", quizAnswers.tone),
+          undertone: `${getLabel("sun", quizAnswers.sun)} / ${getLabel(
+            "veins",
+            quizAnswers.veins
+          )}`,
+          skinType: getLabel("skinType", quizAnswers.skinType),
+          skinCondition: getLabel("skinCondition", quizAnswers.skinCondition),
+          preference: getLabel("preference", quizAnswers.preference),
+          concern: getLabel("concern", quizAnswers.concern),
+          shade: analysisResult.shadeCalculated,
+          status: analysisResult.statusCalculated,
+          alert: analysisResult.reason,
+          date: new Date().toISOString(),
+          products: productsList,
+          emailHtml: emailHtml,
+          emailSubject: `✨ ${userInfo.name}, voici ton diagnostic beauté personnalisé !`,
+        };
+
+        const response = await fetch(N8N_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        if (response.ok) {
+          console.log("Envoyé à N8N avec succès !");
+        } else {
+          console.error("Erreur serveur N8N");
+        }
+      } catch (err) {
+        console.log("Erreur technique envoi", err);
+      }
+    }
+
+    setTimeout(() => {
+      setIsSending(false);
+      setStep("results");
+    }, 1500);
+  };
+
+  const foundationProduct = recommendations.find(p => p.category === "Teint");
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-800 flex justify-center items-start p-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-hidden mt-6">
-        {/* En-tête Expert */}
-        <div className="bg-slate-900 p-6 text-white">
-          <div className="flex items-center gap-2 mb-2">
-            <Activity size={20} className="text-purple-400" />
-            <span className="text-xs font-bold tracking-widest uppercase text-purple-400">
-              Skin test
-            </span>
+    <GradientBackground>
+      {step === "welcome" && (
+        <div className="h-full flex flex-col items-center justify-center p-6 text-center">
+          <div className="w-20 h-20 bg-slate-900 rounded-full flex items-center justify-center mb-6 shadow-xl">
+            <Sparkles className="text-purple-300" size={36} />
           </div>
-          <h1 className="text-2xl font-serif">Diagnostic type de peau</h1>
-          <p className="text-slate-400 text-sm mt-3 leading-relaxed border-l-2 border-purple-500 pl-3">
-            "60% des personnes ne connaissent pas leur vrai type de peau..." Ne
-            devine plus. Identifions ensemble tes besoins réels.
+          <h1 className="text-3xl font-black text-slate-800 mb-4 leading-tight">
+            Mon Diagnostic <span className="text-purple-600">Expert</span>
+          </h1>
+          <p className="text-slate-500 mb-8 max-w-xs mx-auto text-sm">
+            Trouve ta teinte exacte et les produits adaptés à ta peau.
           </p>
-        </div>
-
-        {/* Barre de progression */}
-        {step < MAX_STEPS && (
-          <div className="p-4 pt-2">
-            <div className="flex justify-between items-center text-xs font-medium text-purple-600 mb-1">
-              <span>Avancement</span>
-              <span>{progress}%</span>
+          <div className="w-full max-w-xs space-y-4">
+            <div className="relative">
+              <User
+                className="absolute left-4 top-3.5 text-gray-400 pointer-events-none"
+                size={20}
+              />
+              <input
+                type="text"
+                placeholder="Ton Prénom"
+                value={userInfo.name}
+                onChange={(e) =>
+                  setUserInfo({ ...userInfo, name: e.target.value })
+                }
+                className="w-full p-4 pl-12 rounded-xl bg-slate-50 border border-slate-200 focus:border-purple-500 outline-none font-bold text-slate-800"
+              />
             </div>
-            <div className="w-full bg-slate-200 rounded-full h-2.5">
+            <button
+              onClick={() =>
+                userInfo.name ? setStep("quiz") : alert("Entre ton prénom !")
+              }
+              className="w-full py-4 bg-slate-900 text-white rounded-xl font-bold text-lg shadow-lg hover:scale-[1.02] transition-transform flex items-center justify-center gap-2"
+            >
+              Commencer <ArrowRight size={18} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === "quiz" && (
+        <div className="h-full flex flex-col p-6 bg-white overflow-y-auto">
+          <button
+            onClick={() => {
+              if (qIdx > 0) {
+                setQIdx(qIdx - 1);
+              } else {
+                setStep("welcome");
+              }
+            }}
+            className="w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center mb-4 transition-colors"
+            aria-label="Retour"
+          >
+            <ArrowLeft size={20} className="text-slate-600" />
+          </button>
+
+          <div className="mb-6">
+            <div
+              className="flex justify-between items-center text-xs font-bold text-slate-400 mb-2"
+              style={{ display: "flex", justifyContent: "space-between" }}
+            >
+              <span>
+                QUESTION {qIdx + 1} / {QUESTIONS.length}
+              </span>
+              <span className="ml-4">
+                {Math.round(((qIdx + 1) / QUESTIONS.length) * 100)}%
+              </span>
+            </div>
+            <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
               <div
-                className="bg-purple-500 h-2.5 rounded-full transition-all duration-500"
-                style={{ width: `${progress}%` }}
+                className="h-full bg-purple-600 transition-all duration-300"
+                style={{ width: `${((qIdx + 1) / QUESTIONS.length) * 100}%` }}
               ></div>
             </div>
           </div>
-        )}
 
-        <div className="p-6 pt-2">
-          {/* ÉTAPE 0: SIGNES CLINIQUES */}
-          {step === 0 && (
-            <div className="animate-fade-in">
-              <h2 className="text-lg font-bold mt-4 mb-6">
-                Dirais-tu que ta peau...
-              </h2>
-              <p className="text-xs text-slate-500 mb-3">
-                (Plusieurs choix possibles)
+          <div className="flex-1 flex flex-col justify-center">
+            <h2 className="text-2xl font-black text-slate-800 mb-2">
+              {QUESTIONS[qIdx].question}
+            </h2>
+            {QUESTIONS[qIdx].multi && (
+              <p className="text-sm text-purple-600 font-bold mb-4 flex items-center gap-1">
+                <CheckSquare size={16} /> Plusieurs choix possibles
               </p>
-              <div className="space-y-2">
-                {skinOptions.map((opt) => (
-                  <label
-                    key={opt}
-                    className={`flex items-center p-3 rounded-xl border cursor-pointer transition-all ${
-                      formData.skinSignals.includes(opt)
-                        ? "border-purple-600 bg-purple-50 shadow-sm"
-                        : "border-slate-100 hover:bg-slate-50"
-                    }`}
-                  >
-                    <div
-                      className={`w-5 h-5 rounded border flex items-center justify-center mr-3 ${
-                        formData.skinSignals.includes(opt)
-                          ? "bg-purple-600 border-purple-600"
-                          : "border-slate-300"
-                      }`}
-                    >
-                      {formData.skinSignals.includes(opt) && (
-                        <Check size={14} className="text-white" />
-                      )}
-                    </div>
-                    <span className="text-sm font-medium">{opt}</span>
-                    <input
-                      type="checkbox"
-                      className="hidden"
-                      onChange={() => handleMultiSelect("skinSignals", opt)}
-                      checked={formData.skinSignals.includes(opt)}
-                    />
-                  </label>
-                ))}
-              </div>
-              <button
-                onClick={nextStep}
-                className="w-full mt-6 bg-slate-900 text-white py-3 rounded-xl font-bold flex justify-center items-center gap-2"
-              >
-                Suivant <ArrowRight size={16} />
-              </button>
-            </div>
-          )}
+            )}
 
-          {/* ÉTAPE 1: COMPORTEMENT */}
-          {step === 1 && (
-            <div className="animate-fade-in">
-              <div className="flex justify-start items-center mb-4">
-                <button
-                  onClick={prevStep}
-                  className="text-sm text-slate-500 flex items-center gap-1 hover:text-purple-600 transition-colors"
-                >
-                  <ArrowLeft size={16} /> Précédent
-                </button>
-              </div>
-              <h2 className="text-lg font-bold mt-4 mb-6">
-                Après le nettoyage, sans crème, que ressens-tu ?
-              </h2>
-              <div className="space-y-3">
-                {cleansingOptions.map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() => {
-                      setFormData({ ...formData, afterCleansing: opt.value });
-                      nextStep();
-                    }}
-                    className={`w-full p-4 rounded-xl border text-left font-medium transition-all ${
-                      formData.afterCleansing === opt.value
-                        ? "border-purple-600 bg-purple-50 text-purple-900"
-                        : "border-slate-100 hover:bg-slate-50"
-                    }`}
-                  >
-                    {opt.text}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* ÉTAPE 2: FOCUS REGARD */}
-          {step === 2 && (
-            <div className="animate-fade-in">
-              <div className="flex justify-start items-center mb-4">
-                <button
-                  onClick={prevStep}
-                  className="text-sm text-slate-500 flex items-center gap-1 hover:text-purple-600 transition-colors"
-                >
-                  <ArrowLeft size={16} /> Précédent
-                </button>
-              </div>
-              <h2 className="text-lg font-bold mt-4 mb-6">
-                Dirais-tu de tes yeux...
-              </h2>
-              <div className="space-y-2">
-                {eyeOptions.map((opt) => (
-                  <label
-                    key={opt}
-                    className={`flex items-center p-3 rounded-xl border cursor-pointer transition-all ${
-                      formData.eyeConcerns.includes(opt)
-                        ? "border-purple-600 bg-purple-50 shadow-sm"
-                        : "border-slate-100 hover:bg-slate-50"
-                    }`}
-                  >
-                    <div
-                      className={`w-5 h-5 rounded border flex items-center justify-center mr-3 ${
-                        formData.eyeConcerns.includes(opt)
-                          ? "bg-purple-600 border-purple-600"
-                          : "border-slate-300"
-                      }`}
-                    >
-                      {formData.eyeConcerns.includes(opt) && (
-                        <Check size={14} className="text-white" />
-                      )}
-                    </div>
-                    <span className="text-sm font-medium">{opt}</span>
-                    <input
-                      type="checkbox"
-                      className="hidden"
-                      onChange={() => handleMultiSelect("eyeConcerns", opt)}
-                      checked={formData.eyeConcerns.includes(opt)}
-                    />
-                  </label>
-                ))}
-              </div>
-              <button
-                onClick={nextStep}
-                className="w-full mt-6 bg-slate-900 text-white py-3 rounded-xl font-bold flex justify-center items-center gap-2"
-              >
-                Suivant <ArrowRight size={16} />
-              </button>
-            </div>
-          )}
-
-          {step === 3 && ( // Étape 3
-            <div className="animate-fade-in">
-              <div className="flex justify-start items-center mb-4">
-                <button
-                  onClick={prevStep}
-                  className="text-sm text-slate-500 flex items-center gap-1 hover:text-purple-600 transition-colors"
-                >
-                  <ArrowLeft size={16} /> Précédent
-                </button>
-              </div>
-              <h2 className="text-lg font-bold mt-4 mb-6">Ta tranche d'âge</h2>
-              <div className="grid grid-cols-1 gap-3">
-                {ageOptions.map((opt) => (
-                  <button
-                    key={opt}
-                    onClick={() => {
-                      setFormData({ ...formData, ageRange: opt });
-                      nextStep();
-                    }}
-                    className={`p-4 rounded-xl border text-left font-medium transition-all ${
-                      formData.ageRange === opt
-                        ? "border-purple-600 bg-purple-50 text-purple-900"
-                        : "border-slate-100 hover:bg-slate-50"
-                    }`}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {step === 4 && ( // Étape 4
-            <div className="animate-fade-in">
-              <div className="flex justify-start items-center mb-4">
-                <button
-                  onClick={prevStep}
-                  className="text-sm text-slate-500 flex items-center gap-1 hover:text-purple-600 transition-colors"
-                >
-                  <ArrowLeft size={16} /> Précédent
-                </button>
-              </div>
-              <h2 className="text-lg font-bold mt-4 mb-4">
-                Revue de tes routines & signaux corporels
-              </h2>
-              <h3 className="text-sm font-semibold mt-6 mb-3">
-                Produits utilisés (Multi-choix)
-              </h3>
-              <div className="grid grid-cols-2 gap-2">
-                {routineOptions.map((opt) => (
-                  <label
-                    key={opt}
-                    className={`flex flex-col justify-center items-center p-3 rounded-lg border text-center cursor-pointer h-20 transition-all ${
-                      formData.currentRoutine.includes(opt)
-                        ? "border-purple-500 bg-purple-50"
-                        : "border-slate-100 hover:border-slate-300"
-                    }`}
-                  >
-                    <span className="text-xs font-bold">{opt}</span>
-                    <input
-                      type="checkbox"
-                      className="hidden"
-                      onChange={() => handleMultiSelect("currentRoutine", opt)}
-                      checked={formData.currentRoutine.includes(opt)}
-                    />
-                    {formData.currentRoutine.includes(opt) && (
-                      <Check size={16} className="text-purple-600 mt-1" />
-                    )}
-                  </label>
-                ))}
-              </div>
-
-              {/* NOUVELLES QUESTIONS O/N */}
-              <h3 className="text-sm font-semibold mt-6 mb-3 flex items-center gap-2">
-                <Zap size={16} className="text-purple-500" /> Signaux internes
-              </h3>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 border rounded-lg bg-slate-50">
-                  <label className="text-sm font-medium">
-                    As-tu les ongles cassants ?
-                  </label>
-                  <div className="flex gap-2">
-                    {yesNoOptions.map((opt) => (
-                      <button
-                        key={`nails-${opt.value}`}
-                        onClick={() =>
-                          setFormData({ ...formData, nailsBreak: opt.value })
-                        }
-                        className={`px-4 py-1 rounded text-sm font-medium transition-colors ${
-                          formData.nailsBreak === opt.value
-                            ? "bg-purple-600 text-white"
-                            : "bg-slate-200 text-slate-700 hover:bg-slate-300"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-center p-3 border rounded-lg bg-slate-50">
-                  <label className="text-sm font-medium">
-                    Cheveux ternes et/ou abîmés ?
-                  </label>
-                  <div className="flex gap-2">
-                    {yesNoOptions.map((opt) => (
-                      <button
-                        key={`hair-${opt.value}`}
-                        onClick={() =>
-                          setFormData({ ...formData, dullHair: opt.value })
-                        }
-                        className={`px-4 py-1 rounded text-sm font-medium transition-colors ${
-                          formData.dullHair === opt.value
-                            ? "bg-purple-600 text-white"
-                            : "bg-slate-200 text-slate-700 hover:bg-slate-300"
-                        }`}
-                      >
-                        {opt.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <button
-                onClick={nextStep}
-                className="w-full mt-6 bg-slate-900 text-white py-3 rounded-xl font-bold flex justify-center items-center gap-2"
-              >
-                Suivant <ArrowRight size={16} />
-              </button>
-            </div>
-          )}
-
-          {step === 5 && ( // Étape 5
-            <div className="animate-fade-in">
-              <div className="flex justify-start items-center mb-4">
-                <button
-                  onClick={prevStep}
-                  className="text-sm text-slate-500 flex items-center gap-1 hover:text-purple-600 transition-colors"
-                >
-                  <ArrowLeft size={16} /> Précédent
-                </button>
-              </div>
-              <h2 className="text-lg font-bold mt-4 mb-4">
-                La "Baguette Magique"
-              </h2>
-              <p className="text-sm text-slate-600 mb-6">
-                Parmi les problèmes que tu as signalés, lequel voudrais-tu
-                effacer en PRIORITÉ absolue ?
-              </p>
-              <div className="space-y-3">
-                {formData.skinSignals.length > 0 ? (
-                  formData.skinSignals.map((opt) => (
-                    <button
-                      key={opt}
-                      onClick={() => {
-                        setFormData({ ...formData, topPriority: opt });
-                        nextStep();
-                      }}
-                      className="w-full p-4 rounded-xl border border-orange-200 bg-orange-50 text-orange-900 font-medium text-left hover:bg-orange-100 transition-colors"
-                    >
-                      🎯 Régler : {opt}
-                    </button>
-                  ))
-                ) : (
-                  <button
-                    onClick={nextStep}
-                    className="w-full p-4 bg-slate-100 rounded-xl"
-                  >
-                    Aucun problème signalé, passer à la suite
-                  </button>
-                )}
-              </div>
-              <p className="text-xs text-center text-slate-400 mt-4">
-                Un seul choix possible pour cibler le traitement.
-              </p>
-            </div>
-          )}
-
-          {step === 6 && ( // Étape 6
-            <div className="animate-fade-in">
-              <h3 className="text-xl font-serif font-bold text-slate-800 mb-4 text-center">
-                Ton Diagnostic Personnalisé
-              </h3>
-
-              {applicableDiagnoses.length > 0 ? (
-                <div className="space-y-4">
-                  {applicableDiagnoses.map((diag, index) => {
-                    const reco =
-                      RECOMMENDATION_MAP[
-                        diag
-                      ];
-                    return (
-                      <div
-                        key={index}
-                        className="bg-white p-4 rounded-xl border border-purple-200 shadow-md"
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="text-2xl">{reco.icon}</span>
-                          <h4 className="font-bold text-slate-800">
-                            {diag.split(" / ")[0]}
-                          </h4>
-                        </div>
-                        <p className="text-xs text-slate-500 mt-1 italic">
-                          {reco.protocol}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-200 flex items-center gap-3">
-                  <AlertTriangle size={20} className="text-yellow-600" />
-                  <p className="text-sm text-yellow-800">
-                    Aucun diagnostic clair n'a été trouvé. Sonia va analyser
-                    manuellement tes réponses.
-                  </p>
+            <div
+              className={`${
+                QUESTIONS[qIdx].image
+                  ? "flex flex-col sm:flex-row gap-4 items-start"
+                  : ""
+              }`}
+            >
+              {QUESTIONS[qIdx].image && (
+                <div className="order-1 sm:order-2 flex-shrink-0 flex justify-center sm:justify-end w-full sm:w-auto mb-4 sm:mb-0">
+                  <img
+                    src={QUESTIONS[qIdx].image}
+                    alt="Guide teintes"
+                    className="w-28 sm:w-32 md:w-36 h-auto rounded-xl shadow-lg object-contain"
+                  />
                 </div>
               )}
 
-              {/* Formulaire Identité */}
-              <div className="space-y-4 mt-6">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
-                  Où envoyer ta préconisation beauté ?
-                </h4>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Prénom"
-                    className="w-1/2 p-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-500"
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        identity: {
-                          ...formData.identity,
-                          prenom: e.target.value,
-                        },
-                      })
-                    }
-                  />
-                  <input
-                    type="text"
-                    placeholder="Nom"
-                    className="w-1/2 p-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-500"
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        identity: { ...formData.identity, nom: e.target.value },
-                      })
-                    }
-                  />
-                </div>
-                <input
-                  type="email"
-                  placeholder="Email (pour le protocole)"
-                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-purple-500"
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      identity: { ...formData.identity, email: e.target.value },
-                    })
-                  }
-                />
-              </div>
-
-              {/* MENTION RGPD ET SPAMS */}
-              <p className="text-xs text-center text-slate-500 mt-4">
-                <strong>
-                  Pense à vérifier tes spams si le protocole n'arrive pas !
-                </strong>
-                <br />
-                En validant, vous acceptez que <strong>Ose&Brille</strong>{" "}
-                utilise ces données pour vous envoyer le diagnostic. Consultez
-                notre{" "}
-                <a
-                  href="/politique-confidentialite.html"
-                  target="_blank"
-                  className="font-bold text-purple-600 hover:text-purple-700 underline"
-                >
-                  Politique de confidentialité
-                </a>
-                .
-              </p>
-
-              <button
-                onClick={sendToN8N}
-                className="w-full mt-6 bg-green-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-green-200 hover:bg-green-700 transition-all"
+              <div
+                className={`space-y-3 ${
+                  QUESTIONS[qIdx].image ? "flex-1 order-2 sm:order-1" : ""
+                }`}
               >
-                Valider mon diagnostic et recevoir mes préconisations
-              </button>
+                {QUESTIONS[qIdx].options.map((opt, i) => {
+                  const isSelected = QUESTIONS[qIdx].multi
+                    ? (quizAnswers[QUESTIONS[qIdx].id] || []).includes(opt.value)
+                    : quizAnswers[QUESTIONS[qIdx].id] === opt.value;
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => handleQuizAnswer(opt.value)}
+                      className={`w-full text-left p-4 rounded-xl border transition-all font-bold shadow-sm flex justify-between items-center ${
+                        isSelected
+                          ? "bg-purple-600 text-white border-purple-600"
+                          : "bg-white text-slate-700 border-slate-200 hover:border-purple-500"
+                      }`}
+                    >
+                      <span>{opt.label}</span>
+                      {isSelected && (
+                        <CheckCircle2 size={20} className="text-white" />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
-              <p className="text-[10px] text-center text-slate-400 mt-3">
-                Tes données restent strictement confidentielles.
+            {QUESTIONS[qIdx].multi && (
+              <button
+                onClick={handleNextQuestion}
+                className="mt-6 w-full py-4 bg-slate-900 text-white rounded-xl font-bold shadow-lg hover:bg-slate-800 transition-all"
+              >
+                Valider mes choix
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {step === "capture" && (
+        <div className="h-full flex flex-col justify-center p-8 bg-white text-center relative">
+          <button
+            onClick={() => {
+              setQIdx(QUESTIONS.length - 1);
+              setStep("quiz");
+            }}
+            className="absolute top-6 left-6 w-10 h-10 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center justify-center transition-colors"
+            aria-label="Retour"
+          >
+            <ArrowLeft size={20} className="text-slate-600" />
+          </button>
+
+          <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle2 size={32} />
+          </div>
+          <h2 className="text-2xl font-black text-slate-800 mb-2">
+            Calcul Terminé
+          </h2>
+          <p className="text-slate-500 mb-8 text-sm">
+            Découvre si ton profil nécessite une expertise manuelle.
+          </p>
+          <form onSubmit={sendDataToSonia} className="w-full space-y-4">
+            <div className="relative">
+              <Mail
+                className="absolute left-4 top-3.5 text-gray-400 pointer-events-none"
+                size={20}
+              />
+              <input
+                required
+                type="email"
+                placeholder="Ton Email"
+                value={userInfo.email}
+                onChange={(e) =>
+                  setUserInfo({ ...userInfo, email: e.target.value })
+                }
+                className="w-full p-4 pl-12 rounded-xl bg-slate-50 border border-slate-200 focus:border-purple-500 font-bold outline-none"
+              />
+            </div>
+            <button
+              disabled={isSending}
+              className="w-full py-4 bg-purple-600 text-white rounded-xl font-bold text-lg shadow-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+            >
+              {isSending ? "Analyse et Envoi..." : "Voir mon résultat"}
+            </button>
+          </form>
+        </div>
+      )}
+
+      {step === "results" && (
+        <div className="h-full flex flex-col bg-slate-50 overflow-y-auto">
+          <div className="bg-white p-6 rounded-b-3xl shadow-sm z-10">
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 mb-6 text-left">
+              <div className="flex items-center gap-2 mb-2 border-b border-slate-200 pb-2">
+                <ClipboardList size={16} className="text-slate-500" />
+                <h3 className="font-bold text-slate-700 text-sm uppercase tracking-wide">
+                  Ton Profil Beauté
+                </h3>
+              </div>
+              <div className="space-y-1 text-xs text-slate-600">
+                <p>
+                  <strong>Teint :</strong> {getLabel("tone", quizAnswers.tone)}
+                </p>
+                <p>
+                  <strong>Sous-ton :</strong> Soleil{" "}
+                  {getLabel("sun", quizAnswers.sun)} / Veines{" "}
+                  {getLabel("veins", quizAnswers.veins)}
+                </p>
+                <p>
+                  <strong>Peau :</strong>{" "}
+                  {getLabel("skinType", quizAnswers.skinType)}
+                </p>
+                <p>
+                  <strong>État :</strong>{" "}
+                  {getLabel("skinCondition", quizAnswers.skinCondition)}
+                </p>
+                <p>
+                  <strong>Texture :</strong>{" "}
+                  {getLabel("preference", quizAnswers.preference)}
+                </p>
+              </div>
+            </div>
+
+            {status === "complex" ? (
+              <>
+                <div className="bg-amber-50 border border-amber-100 p-4 rounded-xl mb-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Lock className="text-amber-600" size={20} />
+                    <h2 className="font-bold text-amber-800">
+                      Analyse Requise
+                    </h2>
+                  </div>
+                  <p className="text-sm text-amber-800 leading-relaxed">
+                    Ton profil est atypique ({alertReason}). Pour éviter une
+                    erreur, <strong>je dois valider ta teinte.</strong>
+                  </p>
+                </div>
+                <a
+                  href={INSTAGRAM_DM_LINK}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="w-full py-4 bg-amber-500 text-white rounded-xl font-bold text-lg shadow-lg shadow-amber-200 hover:bg-amber-600 transition-colors flex items-center justify-center gap-2 animate-pulse"
+                >
+                  <MessageCircle size={24} /> Me contacter par Instagram DM
+                </a>
+              </>
+            ) : (
+              <>
+                <div className="mb-6">
+                  {/* Carte Héros Produit + Teinte */}
+                  <div className="bg-white rounded-2xl p-4 shadow-lg shadow-purple-100 border border-purple-100 flex items-center gap-4 relative overflow-hidden">
+                    {/* Effet d'arrière-plan subtil */}
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-purple-50 rounded-full -mr-16 -mt-16 z-0"></div>
+                    
+                    {/* Image Produit */}
+                    <div className="w-24 h-24 flex-shrink-0 bg-slate-50 rounded-xl overflow-hidden border border-slate-100 relative z-10">
+                      <img
+                        src={foundationProduct?.img}
+                        alt={foundationProduct?.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+
+                    {/* Infos Teinte & Action */}
+                    <div className="flex-1 text-left relative z-10">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1">
+                          <CheckCircle2 size={10} /> Validé
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Ta teinte idéale</p>
+                      <h2 className="text-2xl font-black text-purple-600 leading-tight mb-1">{shadeName}</h2>
+                      <p className="text-xs text-slate-600 font-medium mb-3 line-clamp-1">{foundationProduct?.name}</p>
+                      
+                      <a
+                        href={foundationProduct?.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center justify-center w-full bg-slate-900 text-white text-xs font-bold py-2.5 rounded-lg gap-2 hover:bg-slate-800 transition-colors shadow-md"
+                      >
+                        <ShoppingBag size={12} /> Commander ma teinte
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Alerte éventuelle */}
+                  {alertReason && (
+                    <div className="mt-3 bg-blue-50 text-blue-800 text-xs p-3 rounded-xl border border-blue-100 font-medium text-left flex gap-2">
+                      <span>ℹ️</span>
+                      <span>{alertReason}</span>
+                    </div>
+                  )}
+                </div>
+
+                <GuaranteeBadge />
+
+                <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 mb-4 text-center">
+                  <p className="text-sm text-blue-800 font-bold mb-3">
+                    Tu as un doute ? Envoie-moi ta photo pour une validation manuelle !
+                  </p>
+                  <p className="text-xs text-blue-700 mb-4 leading-relaxed bg-blue-100 p-2 rounded-lg">
+                    📸 <strong>Conseil Photo :</strong> Prends la photo <strong>face à une fenêtre</strong>,
+                    mais <strong>jamais face au soleil</strong> direct. Idéalement, une fenêtre côté
+                    Nord (lumière naturelle indirecte) pour que les couleurs soient fidèles.
+                  </p>
+                  <a
+                    href={INSTAGRAM_DM_LINK}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold uppercase hover:bg-blue-700 transition-colors"
+                  >
+                    <MessageCircle size={14} /> Demander conseil (Instagram DM)
+                  </a>
+                </div>
+              </>
+            )}
+          </div>
+
+          {status === "standard" && (
+            <div className="p-6 pb-20">
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4 text-center">
+                Ta routine recommandée
               </p>
+              <div className="space-y-3 opacity-90">
+                {[...recommendations]
+                  .filter(p => p)
+                  .sort((a, b) => {
+                    const categoryOrder = {
+                      "Teint": 1,
+                      "Base": 2,
+                      "Finition": 3,
+                      "Correction": 4,
+                      "Soin Yeux": 5,
+                      "Soin Profond": 6,
+                      "Soin Tenseur": 7,
+                      "Soin Eclat": 8,
+                      "Soin": 9,
+                    };
+                    const orderA = categoryOrder[a.category] || 99;
+                    const orderB = categoryOrder[b.category] || 99;
+                    return orderA - orderB;
+                  })
+                  .map((p, i) => (
+                  <div
+                    key={i}
+                    className="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex gap-3 items-center animate-in slide-in-from-bottom-4"
+                  >
+                    <div className="w-14 h-14 flex-shrink-0 bg-slate-50 rounded-lg overflow-hidden border border-slate-100">
+                       <img 
+                          src={p.img} 
+                          alt={p.name} 
+                          className="w-full h-full object-cover"
+                        />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-slate-800 text-sm">
+                        {p.name}
+                      </h3>
+                      <p className="text-[10px] text-slate-500 mb-1">
+                        {p.desc}
+                      </p>
+                      <div className="flex justify-between items-center mt-1">
+                        <span className="text-[10px] bg-purple-50 text-purple-700 px-2 py-1 rounded font-bold">
+                          {p.category}
+                        </span>
+                        <a
+                          href={p.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-[10px] bg-slate-900 text-white px-3 py-1.5 rounded-lg font-bold uppercase flex items-center gap-1 hover:bg-slate-700"
+                        >
+                          <ShoppingBag size={10} /> Acheter
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {Array.isArray(quizAnswers.skinCondition) &&
+                  quizAnswers.skinCondition.includes("Mature") &&
+                  recommendations.find((p) => p.id === "fdt_poudre") && (
+                    <div className="bg-purple-50 p-3 rounded-xl border border-purple-100 mt-3 text-xs text-purple-800">
+                      💧 <strong>Conseil Peau à besoins spécifques :</strong> Excellent choix
+                      ! Cette poudre est hydratante. Applique-la au
+                      <strong>gros pinceau</strong>.
+                    </div>
+                  )}
+              </div>
             </div>
           )}
         </div>
-      </div>
-    </div>
+      )}
+    </GradientBackground>
   );
 }
