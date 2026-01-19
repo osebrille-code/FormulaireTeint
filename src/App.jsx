@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   ArrowRight,
   Activity,
@@ -10,27 +10,6 @@ import {
 
 // Nombre total d'étapes de questions (avant l'étape finale de diagnostic)
 const MAX_STEPS = 6;
-
-// --- 1. INTERFACES (Définition des types pour TypeScript) ---
-
-interface Identity {
-  nom: string;
-  prenom: string;
-  email: string;
-}
-
-interface FormData {
-  gender: string;
-  skinSignals: string[];
-  afterCleansing: string;
-  eyeConcerns: string[];
-  ageRange: string;
-  currentRoutine: string[];
-  nailsBreak: string;
-  dullHair: string;
-  topPriority: string;
-  identity: Identity;
-}
 
 // --- STRUCTURE GLOBALE DES RECOMMANDATIONS ---
 
@@ -61,7 +40,6 @@ const RECOMMENDATION_MAP = {
     `,
     cartLink: "Relance circulatoire https://komigo.me/soniabonnefoy_vfvnvb/CQKHPP",
   },
-  // --- MODIFICATION ICI : Changement du nom de la catégorie ---
   "Structure & Vitalité / Fermeté & Rebond": {
     icon: "✨",
     protocol:
@@ -158,7 +136,7 @@ const RECOMMENDATION_MAP = {
 export default function App() {
   const [step, setStep] = useState(0);
 
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState({
     gender: "Non spécifié",
     skinSignals: [],
     afterCleansing: "",
@@ -215,16 +193,16 @@ export default function App() {
     { label: "Non", value: "N" },
   ];
 
-  const handleMultiSelect = (category: keyof FormData, value: string) => {
+  const handleMultiSelect = (category, value) => {
     setFormData((prev) => {
-      const list = prev[category] as string[];
+      const list = prev[category];
       if (list.includes(value)) {
         return {
           ...prev,
-          [category]: list.filter((item) => item !== value) as string[],
+          [category]: list.filter((item) => item !== value),
         };
       } else {
-        return { ...prev, [category]: [...list, value] as string[] };
+        return { ...prev, [category]: [...list, value] };
       }
     });
   };
@@ -234,26 +212,25 @@ export default function App() {
 
   // --- 5. LOGIQUE DE MULTI-DIAGNOSTIC AVEC ÂGE ET COMPORTEMENT ---
 
-  const getApplicableDiagnoses = (): string[] => {
+  const getApplicableDiagnoses = () => {
     const skin = formData.skinSignals;
     const eye = formData.eyeConcerns;
     const age = formData.ageRange;
     const cleansing = formData.afterCleansing;
     const nailsBreak = formData.nailsBreak;
     const dullHair = formData.dullHair;
-    const diagnoses: string[] = [];
+    const diagnoses = [];
 
     const isMatureAge = age === "35/45 ans" || age === "45 ans et plus";
     const isAdultAcneAge = age === "25/35 ans" || isMatureAge;
 
-    // --- 1. STRUCTURE & VITALITÉ (Remplacement de Peau Mature)
+    // --- 1. STRUCTURE & VITALITÉ
     const hasWrinkles = skin.includes("Rides, ridules");
     const hasSagging = skin.includes("S'affaisse / se relâche");
     if (
       (isMatureAge && (hasWrinkles || hasSagging)) ||
       (!isMatureAge && hasWrinkles && hasSagging)
     ) {
-      // MODIFICATION ICI : On push la nouvelle clé
       diagnoses.push("Structure & Vitalité / Fermeté & Rebond");
     }
 
@@ -328,7 +305,7 @@ export default function App() {
     }
 
     const recommendationDetails = applicableDiagnoses.map((diag) => {
-      const reco = RECOMMENDATION_MAP[diag as keyof typeof RECOMMENDATION_MAP];
+      const reco = RECOMMENDATION_MAP[diag];
       return {
         title: diag.split(" / ")[0],
         cartLink: reco ? reco.cartLink : "#",
@@ -395,6 +372,7 @@ export default function App() {
         body: JSON.stringify(dataToSend),
       });
 
+      // Attention : import.meta.env est spécifique à Vite. Si tu utilises Create React App, utilise process.env.REACT_APP_WHATSAPP_NUMBER
       const WHATSAPP_NUMBER = import.meta.env.VITE_WHATSAPP_NUMBER;
       const messageWhatsApp = `👋 Bonjour Sonia ! Voici mon Diagnostic Soin. Mes besoins principaux sont : ${applicableDiagnoses.join(
         ", "
@@ -781,7 +759,7 @@ export default function App() {
                   {applicableDiagnoses.map((diag, index) => {
                     const reco =
                       RECOMMENDATION_MAP[
-                        diag as keyof typeof RECOMMENDATION_MAP
+                        diag
                       ];
                     return (
                       <div
