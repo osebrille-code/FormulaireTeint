@@ -14,15 +14,31 @@ import {
   ClipboardList,
 } from "lucide-react";
 
-// --- 1. TES LIENS KOMIGO ---
+// --- 1. TES LIENS KOMIGO & IMAGES ---
 const SHOP_ROOT = "https://komigo.me/soniabonnefoy_vfvnvb/";
 
-// Fonctions pour générer les URLs dynamiques selon la teinte
+// URLs Images
+const IMAGES = {
+  FOUNDATION_LIQUID: "https://komigo.me/static/media/shop/products/CVKna3Wigz5QKoL68VMcg.webp?width=2000",
+  FOUNDATION_BB: "https://komigo.me/static/media/shop/products/CK1EPqyf4TCE9h1VZBEd8.webp?width=2000",
+  FOUNDATION_CREME: "https://komigo.me/static/media/shop/products/CK1ERADYbkbK8xZSwrMCd.webp?width=2000",
+  FOUNDATION_POWDER: "https://komigo.me/static/media/shop/products/CK1EZ3D643NWp6pqhHMfb.webp?width=2000",
+  BASE_ILLUMINATING: "https://komigo.me/static/media/shop/products/CK1EJvFFCtoeZHQNzweZa.webp?width=2000",
+  POWDER_PRIME_SET: "https://komigo.me/static/media/shop/products/CTToKgHqSGfCkWoSeq1mY.webp?width=2000",
+  SPRAY: "https://komigo.me/static/media/shop/products/CK1Ea91s9oF9m4Zh2adk1.webp?width=2000",
+  SKINCARE_YOUTH: "https://komigo.me/static/media/shop/products/CVG7kty25ZBt9yNCot2V8.webp?width=2000",
+  SKINCARE_GLOW: "https://komigo.me/static/media/shop/products/CVG9mR3zT53dEeKCDs5MA.webp?width=2000",
+  SKINCARE_UPLIFT: "https://komigo.me/static/media/shop/products/CX7moyn9MviZohXztz65x.webp?width=2000",
+  SKINCARE_MASK: "https://komigo.me/static/media/shop/products/CTTXZVXCmnQSjsXJxwMtY.webp?width=2000",
+  EYE_CREAM: "https://komigo.me/static/media/shop/products/CTTXbdzzjbqeZp6EsZAA7.webp?width=2000",
+  EYE_MASK: "https://komigo.me/static/media/shop/products/CQ9FDRqoVThp9eXsgW9ig.webp?width=2000",
+};
+
+// Fonctions URLs dynamiques
 const getSerumFoundationUrl = (shade) => 
   `https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-SerumFoundation-${shade}`;
 
 const getBBCreamUrl = (shade) => {
-  // Convertir "Fair Light" → "FairLight", "Light Medium" → "LightMedium"
   const urlShade = shade.replace(/\s+/g, '');
   return `https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-BBTinted-${urlShade}`;
 };
@@ -34,39 +50,25 @@ const getPowderFoundationUrl = (shade) =>
   `https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-PressedPowder-${shade}`;
 
 const LINKS = {
-  FOUNDATION_LIQUID:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-SerumFoundation-Alaari",
-  FOUNDATION_BB:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-BBTinted-FairLight",
-  FOUNDATION_CREME:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-CreamFoundation-1C_P",
-  FOUNDATION_POWDER:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-PressedPowder-Cabretta",
-  BASE_ILLUMINATING:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-IlluminatingPrimer",
-  POWDER_PRIME_SET:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-PrimeSetPowder",
+  FOUNDATION_LIQUID: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-SerumFoundation-Alaari",
+  FOUNDATION_BB: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-BBTinted-FairLight",
+  FOUNDATION_CREME: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-CreamFoundation-1C_P",
+  FOUNDATION_POWDER: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-PressedPowder-Cabretta",
+  BASE_ILLUMINATING: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-IlluminatingPrimer",
+  POWDER_PRIME_SET: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-PrimeSetPowder",
   SPRAY: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-PrimeSetMist",
-  SKINCARE_YOUTH:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-YOUTHPLEXIONDayMoisturizer",
-  SKINCARE_GLOW:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-GlowplexionSerum",
-  SKINCARE_UPLIFT:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-HydratingSqualaneOil",
-  SKINCARE_GEL:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-YOUTHPLEXIONDayMoisturizer",
-  SKINCARE_MASK:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-ClayCharcoalMask",
-  EYE_CREAM:
-    "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-YouniversalEyeCream",
+  SKINCARE_YOUTH: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-YOUTHPLEXIONDayMoisturizer",
+  SKINCARE_GLOW: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-GlowplexionSerum",
+  SKINCARE_UPLIFT: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-HydratingSqualaneOil",
+  SKINCARE_GEL: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-YOUTHPLEXIONDayMoisturizer",
+  SKINCARE_MASK: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-ClayCharcoalMask",
+  EYE_CREAM: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-YouniversalEyeCream",
   EYE_MASK: "https://komigo.me/soniabonnefoy_vfvnvb/shop/pk/Younique-EyeMask",
   CONCEALER: SHOP_ROOT,
 };
 
 // --- 2. CONFIGURATION AUTOMATISATION ---
-const N8N_WEBHOOK_URL =
-  "https://n8n.srv1165443.hstgr.cloud/webhook/a5c67185-e091-4167-9158-3aded7cfd328";
-
+const N8N_WEBHOOK_URL = "https://n8n.srv1165443.hstgr.cloud/webhook/a5c67185-e091-4167-9158-3aded7cfd328";
 const INSTAGRAM_DM_LINK = "https://ig.me/m/sonia_bonnefoy";
 
 // --- 3. BASE DE DONNÉES PRODUITS ---
@@ -76,15 +78,15 @@ const PRODUCTS_DB = [
     name: "FDT Sérum TOUCH (Liquide)",
     category: "Teint",
     desc: "Couvrance modulable.",
-    img: "",
+    img: IMAGES.FOUNDATION_LIQUID,
     url: LINKS.FOUNDATION_LIQUID,
   },
   {
     id: "fdt_bb",
     name: "BB crème Teintée BARE·YOU",
     category: "Teint",
-    desc: 'Couvrance légère, effet seconde peau".',
-    img: "",
+    desc: 'Couvrance légère, effet "seconde peau".',
+    img: IMAGES.FOUNDATION_BB,
     url: LINKS.FOUNDATION_BB,
   },
   {
@@ -92,7 +94,7 @@ const PRODUCTS_DB = [
     name: "FDT Poudre Compacte TOUCH",
     category: "Teint",
     desc: "Sans talc. Fini velours.",
-    img: "",
+    img: IMAGES.FOUNDATION_POWDER,
     url: LINKS.FOUNDATION_POWDER,
   },
   {
@@ -100,23 +102,23 @@ const PRODUCTS_DB = [
     name: "FDT Crème Compacte TOUCH",
     category: "Teint",
     desc: "Fini satiné, couvrance modulable.",
-    img: "",
+    img: IMAGES.FOUNDATION_CREME,
     url: LINKS.FOUNDATION_CREME,
   },
   {
     id: "base_illu",
     name: "Base éclat",
     category: "Base",
-    desc: "Lisse et améliore le rendu du fond de teint",
-    img: "",
+    desc: "Lisse et améliore le rendu.",
+    img: IMAGES.BASE_ILLUMINATING,
     url: LINKS.BASE_ILLUMINATING,
   },
   {
     id: "youth",
     name: "Sérum YOUTHPLEXION",
     category: "Soin Profond",
-    desc: "Restaure et rajeunie",
-    img: "",
+    desc: "Restaure et rajeunie.",
+    img: IMAGES.SKINCARE_YOUTH,
     url: LINKS.SKINCARE_YOUTH,
   },
   {
@@ -124,7 +126,7 @@ const PRODUCTS_DB = [
     name: "Sérum huile hydratante",
     category: "Soin Tenseur",
     desc: "Lisse et hydrate.",
-    img: "",
+    img: IMAGES.SKINCARE_UPLIFT,
     url: LINKS.SKINCARE_UPLIFT,
   },
   {
@@ -132,7 +134,7 @@ const PRODUCTS_DB = [
     name: "Sérum GLOWPLEXION",
     category: "Soin Eclat",
     desc: "Cible les imperfections.",
-    img: "",
+    img: IMAGES.SKINCARE_GLOW,
     url: LINKS.SKINCARE_GLOW,
   },
   {
@@ -140,7 +142,7 @@ const PRODUCTS_DB = [
     name: "Crème de jour",
     category: "Soin",
     desc: "Hydratation renforcée.",
-    img: "",
+    img: IMAGES.SKINCARE_YOUTH, // Même image que Youth selon demande
     url: LINKS.SKINCARE_GEL,
   },
   {
@@ -148,7 +150,7 @@ const PRODUCTS_DB = [
     name: "Masque Détoxifiant",
     category: "Soin",
     desc: "Régule le sébum.",
-    img: "",
+    img: IMAGES.SKINCARE_MASK,
     url: LINKS.SKINCARE_MASK,
   },
   {
@@ -156,7 +158,7 @@ const PRODUCTS_DB = [
     name: "Contour des Yeux Youniversal",
     category: "Soin Yeux",
     desc: "Hydrate et lisse les cernes.",
-    img: "",
+    img: IMAGES.EYE_CREAM,
     url: LINKS.EYE_CREAM,
   },
   {
@@ -164,7 +166,7 @@ const PRODUCTS_DB = [
     name: "Patchs Contour des Yeux",
     category: "Soin Yeux",
     desc: "Hydrate & Décongestionne.",
-    img: "",
+    img: IMAGES.EYE_MASK,
     url: LINKS.EYE_MASK,
   },
   {
@@ -172,7 +174,7 @@ const PRODUCTS_DB = [
     name: "Correcteur Skin Perfecting",
     category: "Correction",
     desc: "Camouflage cernes.",
-    img: "",
+    img: IMAGES.FOUNDATION_LIQUID, // Fallback visuel car pas d'image fournie
     url: LINKS.CONCEALER,
   },
   {
@@ -180,7 +182,7 @@ const PRODUCTS_DB = [
     name: "Poudre BeHold",
     category: "Finition",
     desc: "Poudre hydratante & fixante.",
-    img: "",
+    img: IMAGES.POWDER_PRIME_SET,
     url: LINKS.POWDER_PRIME_SET,
   },
   {
@@ -188,7 +190,7 @@ const PRODUCTS_DB = [
     name: "Brume Prime & Set",
     category: "Finition",
     desc: "Brume hydratante & fixante.",
-    img: "",
+    img: IMAGES.SPRAY,
     url: LINKS.SPRAY,
   },
 ];
@@ -303,7 +305,7 @@ const QUESTIONS = [
 const generateEmailHtml = (userInfo, answers, shade, status, alertReason, recommendations, getLabel) => {
   const isComplex = status === "complex";
   
-  // Ordre de priorité des catégories pour le tri
+  // Ordre de priorité
   const categoryOrder = {
     "Teint": 1,
     "Base": 2,
@@ -316,7 +318,6 @@ const generateEmailHtml = (userInfo, answers, shade, status, alertReason, recomm
     "Soin": 9,
   };
 
-  // Trier les produits selon l'ordre des catégories
   const sortedRecommendations = [...recommendations]
     .filter(p => p)
     .sort((a, b) => {
@@ -325,17 +326,20 @@ const generateEmailHtml = (userInfo, answers, shade, status, alertReason, recomm
       return orderA - orderB;
     });
 
-  // Génération de la liste des produits en HTML
+  // HTML avec images
   const productsHtml = sortedRecommendations
     .map(p => `
       <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; width: 60px; vertical-align: middle;">
+           <img src="${p.img}" alt="${p.name}" width="50" height="50" style="display: block; border-radius: 8px; object-fit: cover; border: 1px solid #f1f5f9;">
+        </td>
         <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">
           <strong style="color: #1e293b; font-size: 14px;">${p.name}</strong><br>
           <span style="color: #64748b; font-size: 12px;">${p.desc}</span><br>
           <span style="display: inline-block; background: #f3e8ff; color: #7c3aed; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; margin-top: 4px;">${p.category}</span>
         </td>
         <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: right; vertical-align: middle;">
-          <a href="${p.url}" style="display: inline-block; background: #1e293b; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold;">Voir le produit</a>
+          <a href="${p.url}" style="display: inline-block; background: #1e293b; color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold;">Voir</a>
         </td>
       </tr>
     `).join('');
@@ -354,7 +358,6 @@ const generateEmailHtml = (userInfo, answers, shade, status, alertReason, recomm
       <td align="center">
         <table width="600" cellpadding="0" cellspacing="0" style="background-color: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
           
-          <!-- Header -->
           <tr>
             <td style="background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%); padding: 30px; text-align: center;">
               <h1 style="color: white; margin: 0; font-size: 24px; font-weight: 800;">✨ Ton Diagnostic Beauté</h1>
@@ -362,7 +365,6 @@ const generateEmailHtml = (userInfo, answers, shade, status, alertReason, recomm
             </td>
           </tr>
 
-          <!-- Profil Beauté -->
           <tr>
             <td style="padding: 24px;">
               <table width="100%" style="background: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0;">
@@ -384,7 +386,6 @@ const generateEmailHtml = (userInfo, answers, shade, status, alertReason, recomm
           </tr>
 
           ${isComplex ? `
-          <!-- Alerte Profil Complexe -->
           <tr>
             <td style="padding: 0 24px 24px 24px;">
               <table width="100%" style="background: #fef3c7; border-radius: 12px; border: 1px solid #fcd34d;">
@@ -401,7 +402,6 @@ const generateEmailHtml = (userInfo, answers, shade, status, alertReason, recomm
             </td>
           </tr>
           ` : `
-          <!-- Teinte Validée -->
           <tr>
             <td style="padding: 0 24px;">
               <table width="100%" style="text-align: center;">
@@ -416,7 +416,6 @@ const generateEmailHtml = (userInfo, answers, shade, status, alertReason, recomm
             </td>
           </tr>
 
-          <!-- Garantie -->
           <tr>
             <td style="padding: 16px 24px;">
               <table width="100%" style="background: #f0fdf4; border-radius: 12px; border: 1px solid #bbf7d0;">
@@ -430,7 +429,6 @@ const generateEmailHtml = (userInfo, answers, shade, status, alertReason, recomm
             </td>
           </tr>
 
-          <!-- Liste des Produits -->
           <tr>
             <td style="padding: 0 24px 24px 24px;">
               <h2 style="margin: 0 0 16px 0; font-size: 14px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; text-align: center;">🎁 Ta Routine Recommandée</h2>
@@ -441,7 +439,6 @@ const generateEmailHtml = (userInfo, answers, shade, status, alertReason, recomm
           </tr>
           `}
 
-          <!-- CTA Contact -->
           <tr>
             <td style="padding: 0 24px 24px 24px;">
               <table width="100%" style="background: #eff6ff; border-radius: 12px; border: 1px solid #bfdbfe; text-align: center;">
@@ -456,7 +453,6 @@ const generateEmailHtml = (userInfo, answers, shade, status, alertReason, recomm
             </td>
           </tr>
 
-          <!-- Footer -->
           <tr>
             <td style="background: #f8fafc; padding: 20px; text-align: center; border-top: 1px solid #e2e8f0;">
               <p style="margin: 0; font-size: 11px; color: #94a3b8;">
@@ -730,7 +726,6 @@ export default function App() {
 
     if (N8N_WEBHOOK_URL && N8N_WEBHOOK_URL.startsWith("http")) {
       try {
-        // Génération du HTML pour l'email
         const emailHtml = generateEmailHtml(
           userInfo,
           quizAnswers,
@@ -741,7 +736,6 @@ export default function App() {
           getLabel
         );
 
-        // Liste simplifiée des produits pour le JSON
         const productsList = analysisResult.recommendations
           .filter(p => p)
           .map(p => ({
@@ -749,6 +743,7 @@ export default function App() {
             category: p.category,
             description: p.desc,
             url: p.url,
+            img: p.img,
           }));
 
         const payload = {
@@ -767,7 +762,6 @@ export default function App() {
           status: analysisResult.statusCalculated,
           alert: analysisResult.reason,
           date: new Date().toISOString(),
-          // Nouveaux champs pour l'email
           products: productsList,
           emailHtml: emailHtml,
           emailSubject: `✨ ${userInfo.name}, voici ton diagnostic beauté personnalisé !`,
@@ -838,7 +832,6 @@ export default function App() {
 
       {step === "quiz" && (
         <div className="h-full flex flex-col p-6 bg-white overflow-y-auto">
-          {/* Bouton retour */}
           <button
             onClick={() => {
               if (qIdx > 0) {
@@ -943,7 +936,6 @@ export default function App() {
 
       {step === "capture" && (
         <div className="h-full flex flex-col justify-center p-8 bg-white text-center relative">
-          {/* Bouton retour */}
           <button
             onClick={() => {
               setQIdx(QUESTIONS.length - 1);
@@ -1116,8 +1108,12 @@ export default function App() {
                     key={i}
                     className="bg-white p-3 rounded-xl shadow-sm border border-slate-100 flex gap-3 items-center animate-in slide-in-from-bottom-4"
                   >
-                    <div className="text-2xl bg-slate-50 w-12 h-12 rounded-lg flex items-center justify-center border border-slate-100">
-                      {p.img}
+                    <div className="w-14 h-14 flex-shrink-0 bg-slate-50 rounded-lg overflow-hidden border border-slate-100">
+                       <img 
+                          src={p.img} 
+                          alt={p.name} 
+                          className="w-full h-full object-cover"
+                        />
                     </div>
                     <div className="flex-1">
                       <h3 className="font-bold text-slate-800 text-sm">
